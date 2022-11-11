@@ -1,0 +1,14 @@
+<div (keydown)='onKeyDown($event)' class="d-flex flex-column align-items-center">
+  <h2 #subredditTitle tabindex="-1" class="display-1 border-bottom mt-3 mb-3">r/{{name}}</h2>
+  <select [(ngModel)]='sortTime' class='form-select w-auto'>
+    <option value='hour'>Hour</option>
+    <option value='day'>Day</option>
+    <option value='week'>Week</option>
+    <option value='month'>Month</option>
+    <option value='year'>Year</option>
+    <option value='all'>All time</option>
+  </select>
+  <div>
+    <ss-submission *ngFor="let submissionData of submissionDatas" [data]="submissionData"></ss-submission>
+  </div>
+</div>

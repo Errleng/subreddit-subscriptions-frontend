@@ -1,0 +1,24 @@
+<div #cardDiv tabindex="1" class="card text-center mt-2 mb-2">
+  <h3 class="card-header">
+    <a [href]="shortlink" rel="noopener noreferrer" target="_blank" class="text-decoration-none"
+      [ngClass]="{'deleted': data.removed_by_category !== null}">
+      {{data.title}} ({{data.score}})
+    </a>
+  </h3>
+  <a [href]="shortlink" rel="noopener noreferrer" target="_blank" class="text-decoration-none">
+    <div *ngIf="data.imageUrls && data.imageUrls.length > 0" class="card-body">
+      <img *ngFor="let imgUrl of data.imageUrls" [src]="imgUrl" class="card-img-bottom" alt="submission preview">
+    </div>
+    <div *ngIf="data.mediaVideo" class="card-body">
+      <video #videoElem (playing)="onMediaPlaying()" (pause)="onMediaPause()" (seeked)="onMediaSeekCompletion($event)"
+        controls>
+        <source [src]="data.mediaVideo">
+      </video>
+      <audio #audioElem *ngIf="data.videoAudio">
+        <source [src]="data.videoAudio">
+      </audio>
+    </div>
+    <div *ngIf="data.mediaHtml" [innerHTML]="data.mediaHtml" class="card-body">
+    </div>
+  </a>
+</div>
