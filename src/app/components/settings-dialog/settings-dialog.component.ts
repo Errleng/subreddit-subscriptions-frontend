@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { SettingsService } from 'src/app/services/settings/settings.service';
 
 @Component({
@@ -8,17 +8,17 @@ import { SettingsService } from 'src/app/services/settings/settings.service';
   styleUrls: ['./settings-dialog.component.css']
 })
 export class SettingsDialogComponent implements OnInit {
-  public settingsForm!: FormGroup;
+  public settingsForm!: UntypedFormGroup;
 
   constructor(private settingsService: SettingsService) { }
 
   ngOnInit(): void {
-    this.settingsForm = new FormGroup({
-      scrollSubredditUpKey: new FormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubredditDownKey: new FormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubmissionUpKey: new FormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubmissionDownKey: new FormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      openSubmissionKey: new FormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+    this.settingsForm = new UntypedFormGroup({
+      scrollSubredditUpKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+      scrollSubredditDownKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+      scrollSubmissionUpKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+      scrollSubmissionDownKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+      openSubmissionKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
     })
     const settings = this.settingsService.getSettings();
     if (settings !== null) {
