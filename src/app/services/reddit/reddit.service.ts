@@ -1,20 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class RedditService {
-  // private readonly baseUrl = 'https://subreddit-subscription-backend.herokuapp.com';
-  private readonly baseUrl = '';
-  constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) { }
 
-  public checkSubredditValid(name: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/api/valid/subreddit/${name}`, { observe: 'response' });
-  }
+    public checkSubredditValid(name: string): Observable<any> {
+        return this.http.get(`${environment.apiUrl}/api/valid/subreddit/${name}`, { observe: 'response' });
+    }
 
-  public getSubmissions(name: string, sortTime: string): Observable<object> {
-    return this.http.get(`${this.baseUrl}/api/subreddit/${name}/top/${sortTime}/10`);
-  }
+    public getSubmissions(name: string, sortTime: string): Observable<object> {
+        return this.http.get(`${environment.apiUrl}/api/subreddit/${name}/top/${sortTime}/10`);
+    }
 }
