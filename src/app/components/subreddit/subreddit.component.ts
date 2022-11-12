@@ -84,7 +84,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                 retryWhen((errors) => errors.pipe(
                     tap((err: Error) => console.error(`Error getting data for r/${this.name} submission:`, err, 'retrying...')),
                     delay(5000),
-                    take(10)
+                    take(4)
                 )),
             )
             .subscribe({
