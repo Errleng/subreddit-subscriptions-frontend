@@ -53,6 +53,10 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
         this.sub.unsubscribe();
     }
 
+    randomIntBetween(min: number, max: number) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     focus(origin?: FocusOrigin): void {
         this.subredditTitle.nativeElement.focus({ preventScroll: true });
         this.subredditTitle.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
@@ -83,7 +87,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
             .pipe(
                 retryWhen((errors) => errors.pipe(
                     tap((err: Error) => console.error(`Error getting data for r/${this.name} submission:`, err, 'retrying...')),
-                    delay(5000),
+                    delay(this.randomIntBetween(5000, 60000)),
                     take(4)
                 )),
             )
