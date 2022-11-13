@@ -83,11 +83,12 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     }
 
     loadData(): void {
+        const randomDelay = this.randomIntBetween(5000, 60000);
         this.sub = this.redditService.getSubmissions(this.name, this.sortTime)
             .pipe(
                 retryWhen((errors) => errors.pipe(
-                    tap((err: Error) => console.error(`Error getting data for r/${this.name} submission:`, err, 'retrying...')),
-                    delay(this.randomIntBetween(5000, 60000)),
+                    tap((err: Error) => console.error(`Error getting data for r/${this.name} submission:`, err, `retrying in ${randomDelay}ms`)),
+                    delay(randomDelay),
                     take(4)
                 )),
             )
