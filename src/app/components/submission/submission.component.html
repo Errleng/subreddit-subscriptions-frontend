@@ -1,24 +1,68 @@
 <div #cardDiv tabindex="1" class="card text-center mt-2 mb-2">
   <h3 class="card-header">
-    <a [href]="shortlink" rel="noopener noreferrer" target="_blank" class="text-decoration-none"
-      [ngClass]="{'deleted': data.removed_by_category !== null}">
-      {{data.title}} ({{data.score}})
+    <a
+      [href]="shortlink"
+      rel="noopener noreferrer"
+      target="_blank"
+      class="text-decoration-none"
+      [ngClass]="{
+        deleted: data.submission.removed_by_category !== null,
+        seen: data.oldSubmission !== null
+      }"
+    >
+      <div>
+        {{ data.submission.title }}
+      </div>
+      <div>
+        {{ data.submission.score }} votes,
+        <span [ngClass]="{ highlight: data.submission.upvote_ratio <= 0.7 }"
+          >{{ data.submission.upvote_ratio * 100 }}% upvoted</span
+        >, {{ data.submission.num_comments }} comments<span
+          *ngIf="data.oldSubmission !== null"
+        >
+          <span *ngIf="numNewComments > 0" class="highlight">
+            ({{ numNewComments }} new)</span
+          >
+          <span> </span> </span
+        >, {{ hoursSinceCreation }} hours ago
+      </div>
     </a>
   </h3>
-  <a [href]="shortlink" rel="noopener noreferrer" target="_blank" class="text-decoration-none">
-    <div *ngIf="data.imageUrls && data.imageUrls.length > 0" class="card-body">
-      <img *ngFor="let imgUrl of data.imageUrls" [src]="imgUrl" class="card-img-bottom" alt="submission preview">
+  <a
+    [href]="shortlink"
+    rel="noopener noreferrer"
+    target="_blank"
+    class="text-decoration-none"
+  >
+    <div
+      *ngIf="data.submission.imageUrls && data.submission.imageUrls.length > 0"
+      class="card-body"
+    >
+      <img
+        *ngFor="let imgUrl of data.submission.imageUrls"
+        [src]="imgUrl"
+        class="card-img-bottom"
+        alt="submission preview"
+      />
     </div>
-    <div *ngIf="data.mediaVideo" class="card-body">
-      <video #videoElem (playing)="onMediaPlaying()" (pause)="onMediaPause()" (seeked)="onMediaSeekCompletion($event)"
-        controls>
-        <source [src]="data.mediaVideo">
+    <div *ngIf="data.submission.mediaVideo" class="card-body">
+      <video
+        #videoElem
+        (playing)="onMediaPlaying()"
+        (pause)="onMediaPause()"
+        (seeked)="onMediaSeekCompletion($event)"
+        controls
+      >
+        <source [src]="data.submission.mediaVideo" />
       </video>
-      <audio #audioElem *ngIf="data.videoAudio">
-        <source [src]="data.videoAudio">
+      <audio #audioElem *ngIf="data.submission.videoAudio">
+        <source [src]="data.submission.videoAudio" />
       </audio>
     </div>
-    <div *ngIf="data.mediaHtml" [innerHTML]="data.mediaHtml" class="card-body">
-    </div>
+    <div
+      *ngIf="data.submission.mediaHtml"
+      [innerHTML]="data.submission.mediaHtml"
+      class="card-body"
+    ></div>
   </a>
 </div>

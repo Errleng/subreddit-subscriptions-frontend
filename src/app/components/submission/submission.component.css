@@ -1,5 +1,14 @@
-a:visited {
+a {
+  color: #1c60fe;
+}
+
+a:visited,
+a.seen:visited {
   color: #8649b8;
+}
+
+a.seen {
+  color: dimgrey;
 }
 
 a.deleted {
@@ -12,4 +21,8 @@ div.card:focus {
 
 video {
   width: 100%;
+}
+
+.highlight {
+  color: red;
 }

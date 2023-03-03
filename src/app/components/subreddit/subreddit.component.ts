@@ -4,8 +4,10 @@ import {
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
+import { CacheService } from 'src/app/services/cache/cache.service';
 import { RedditService } from 'src/app/services/reddit/reddit.service';
 import { SettingsService } from 'src/app/services/settings/settings.service';
+import { ISubmission, ISubmissionData } from 'src/app/types/submission';
 import { SubmissionComponent } from '../submission/submission.component';
 
 @Component({
@@ -26,7 +28,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     @ViewChildren(SubmissionComponent) submissions!: QueryList<SubmissionComponent>;
 
-    submissionDatas: { [key: string]: any; }[] = [];
+    submissionDatas: ISubmissionData[] = [];
 
     disabled?: boolean | undefined;
 
@@ -39,7 +41,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
         this.loadData();
     }
 
-    constructor(private redditService: RedditService, private settingsService: SettingsService) { }
+    constructor(private redditService: RedditService, private settingsService: SettingsService, private cacheService: CacheService) { }
 
     ngOnInit(): void /*  */ {
         this.loadData();
@@ -94,13 +96,28 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
             )
             .subscribe({
                 next: (data: object) => {
-                    this.submissionDatas = Object.values(data);
-                    const sortedDatas = [...this.submissionDatas].sort((a, b) => a.score - b.score).reverse();
+                    const submissions: ISubmission[] = Object.values(data);
 
+                    this.submissionDatas = [];
+                    for (const submission of submissions) {
+                        const cachedSubmission = this.cacheService.getSubmission(submission.id);
+                        this.cacheService.addSubmission(submission);
+                        const subData: ISubmissionData = {
+                            submission,
+                            oldSubmission: null,
+                        };
+                        if (cachedSubmission !== undefined) {
+                            subData.oldSubmission = cachedSubmission;
+                        }
+                        this.submissionDatas.push(subData);
+                    }
+                    const sortedDatas = [...this.submissionDatas].sort((a, b) => a.submission.score - b.submission.score).reverse();
                     if (this.submissionDatas !== sortedDatas) {
-                        // console.log(`Scores for ${this.name} are not in descending order:`, this.submissionDatas.map((data) => data.score));
+                        // console.error(`Scores for ${this.name} are not in descending order:`, this.submissionDatas.map((data) => data.score));
                         this.submissionDatas = sortedDatas;
                     }
+
+                    this.cacheService.saveCache();
                 },
             });
     }
