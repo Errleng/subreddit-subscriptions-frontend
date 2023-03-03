@@ -1,6 +1,6 @@
 import { FocusableOption, FocusKeyManager, FocusOrigin } from '@angular/cdk/a11y';
 import {
-    AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren
+    AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
@@ -23,6 +23,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     private sub!: Subscription;
 
     @Input() name: string = '';
+    @Output() focusEvent = new EventEmitter();
 
     @ViewChild('subredditTitle') subredditTitle!: ElementRef;
 
@@ -62,6 +63,11 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     focus(origin?: FocusOrigin): void {
         this.subredditTitle.nativeElement.focus({ preventScroll: true });
         this.subredditTitle.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+    }
+
+    onSubmissionFocus(index: number): void {
+        this.keyEventManager.setActiveItem(index);
+        this.focusEvent.emit();
     }
 
     onKeyDown(event: KeyboardEvent) {

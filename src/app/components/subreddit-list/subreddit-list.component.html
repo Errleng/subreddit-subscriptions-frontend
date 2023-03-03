@@ -1,31 +1,57 @@
 <div class="mt-3 mb-3 col-lg-4 offset-lg-4">
-  <form #subForm="ngForm" class="needs-validation" (ngSubmit)="addSub(searchSubName)">
-    <input [(ngModel)]="searchSubName" name="searchSubName" class="form-control" type="search"
-      placeholder="Search for subreddit">
+  <form
+    #subForm="ngForm"
+    class="needs-validation"
+    (ngSubmit)="addSub(searchSubName)"
+  >
+    <input
+      [(ngModel)]="searchSubName"
+      name="searchSubName"
+      class="form-control"
+      type="search"
+      placeholder="Search for subreddit"
+    />
     <div class="search-error" *ngIf="noResultsFound">
-      Could not find a matching subreddit.
-      Subreddit names should not include "r/".
+      Could not find a matching subreddit. Subreddit names should not include
+      "r/".
     </div>
   </form>
 </div>
 <div class="form-group">
   <label for="subredditListFile" class="btn btn-primary">Import</label>
-  <input (change)="importSubredditList($event)" id="subredditListFile" type="file" class="form-control file-input">
-  <button (click)="exportSubredditList()" class="btn btn-primary">Export</button>
+  <input
+    (change)="importSubredditList($event)"
+    id="subredditListFile"
+    type="file"
+    class="form-control file-input"
+  />
+  <button (click)="exportSubredditList()" class="btn btn-primary">
+    Export
+  </button>
   <button (click)="clearAllSubs()" class="btn btn-primary">Clear all</button>
 </div>
 <div class="mt-3 mb-3 list-group">
   <ol cdkDropList (cdkDropListDropped)="dropSub($event)">
-    <li class="subreddit-list-item" *ngFor="let name of subredditNames; let i = index" cdkDrag>
+    <li
+      class="subreddit-list-item"
+      *ngFor="let name of subredditNames; let i = index"
+      cdkDrag
+    >
       <button (click)="removeSub(i)" class="btn btn-light" type="button">
         <fa-icon [icon]="faTrash"></fa-icon>
       </button>
-      r/{{name}}
+      r/{{ name }}
     </li>
   </ol>
 </div>
 <div class="subreddit-list">
-  <div (keydown)='onKeyDown($event)' *ngFor="let name of subredditNames">
-    <ss-subreddit [name]="name"></ss-subreddit>
+  <div
+    (keydown)="onKeyDown($event)"
+    *ngFor="let name of subredditNames; index as i"
+  >
+    <ss-subreddit
+      [name]="name"
+      (focusEvent)="onSubredditFocus(i)"
+    ></ss-subreddit>
   </div>
 </div>

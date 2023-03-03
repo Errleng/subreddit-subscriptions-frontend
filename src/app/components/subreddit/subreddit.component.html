@@ -18,8 +18,9 @@
   </div>
   <div>
     <ss-submission
-      *ngFor="let submissionData of submissionDatas"
+      *ngFor="let submissionData of submissionDatas; index as i"
       [data]="submissionData"
+      (focusEvent)="onSubmissionFocus(i)"
     ></ss-submission>
   </div>
 </div>

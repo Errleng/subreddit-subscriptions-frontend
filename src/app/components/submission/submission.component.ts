@@ -1,6 +1,6 @@
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
 import {
-    Component, ElementRef, Input, OnInit, SecurityContext, ViewChild, ViewEncapsulation,
+    Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ISubmissionData } from 'src/app/types/submission';
@@ -13,6 +13,7 @@ import { ISubmissionData } from 'src/app/types/submission';
 })
 export class SubmissionComponent implements OnInit, FocusableOption {
     @Input() data!: ISubmissionData;
+    @Output() focusEvent = new EventEmitter();
 
     @ViewChild('cardDiv') card!: ElementRef;
 
@@ -58,6 +59,10 @@ export class SubmissionComponent implements OnInit, FocusableOption {
     focus(origin?: FocusOrigin): void {
         this.card.nativeElement.focus({ preventScroll: true });
         this.card.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+    }
+
+    onFocus(): void {
+        this.focusEvent.emit();
     }
 
     onMediaPlaying() {
