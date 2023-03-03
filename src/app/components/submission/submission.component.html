@@ -16,7 +16,8 @@
       <div class="info-text text-secondary mt-4">
         {{ data.submission.score }} votes,
         <span [ngClass]="{ highlight: data.submission.upvote_ratio <= 0.7 }"
-          >{{ data.submission.upvote_ratio * 100 }}% upvoted</span
+          >{{ data.submission.upvote_ratio * 100 | number : "1.0-0" }}%
+          upvoted</span
         >, {{ data.submission.num_comments }} comments<span
           *ngIf="data.oldSubmission !== null"
         >
