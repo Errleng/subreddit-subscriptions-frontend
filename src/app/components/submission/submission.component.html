@@ -1,70 +1,76 @@
 <div #cardDiv tabindex="1" class="card text-center mt-2 mb-2">
-  <h5 class="card-header">
+  <div class="card-header">
+    <div>
+      <h4>
+        <a
+          [href]="shortlink"
+          rel="noopener noreferrer"
+          target="_blank"
+          class="text-decoration-none"
+          [ngClass]="{
+            deleted: data.submission.removed_by_category !== null,
+            seen: data.oldSubmission !== null
+          }"
+        >
+          {{ data.submission.title }}
+        </a>
+      </h4>
+    </div>
+    <div class="text-secondary">
+      {{ data.submission.score }} votes,
+      <span [ngClass]="{ highlight: data.submission.upvote_ratio <= 0.7 }"
+        >{{ data.submission.upvote_ratio * 100 | number : "1.0-0" }}%
+        upvoted</span
+      >, {{ data.submission.num_comments }} comments<span
+        *ngIf="data.oldSubmission !== null"
+      >
+        <span *ngIf="numNewComments > 0" class="highlight">
+          ({{ numNewComments }} new)</span
+        >
+        <span> </span> </span
+      >, {{ hoursSinceCreation }} hours ago
+    </div>
+  </div>
+  <div>
     <a
       [href]="shortlink"
       rel="noopener noreferrer"
       target="_blank"
       class="text-decoration-none"
-      [ngClass]="{
-        deleted: data.submission.removed_by_category !== null,
-        seen: data.oldSubmission !== null
-      }"
     >
-      <div>
-        {{ data.submission.title }}
-      </div>
-      <div class="info-text text-secondary mt-4">
-        {{ data.submission.score }} votes,
-        <span [ngClass]="{ highlight: data.submission.upvote_ratio <= 0.7 }"
-          >{{ data.submission.upvote_ratio * 100 | number : "1.0-0" }}%
-          upvoted</span
-        >, {{ data.submission.num_comments }} comments<span
-          *ngIf="data.oldSubmission !== null"
-        >
-          <span *ngIf="numNewComments > 0" class="highlight">
-            ({{ numNewComments }} new)</span
-          >
-          <span> </span> </span
-        >, {{ hoursSinceCreation }} hours ago
-      </div>
-    </a>
-  </h5>
-  <a
-    [href]="shortlink"
-    rel="noopener noreferrer"
-    target="_blank"
-    class="text-decoration-none"
-  >
-    <div
-      *ngIf="data.submission.imageUrls && data.submission.imageUrls.length > 0"
-      class="card-body"
-    >
-      <img
-        class="submission-media"
-        *ngFor="let imgUrl of data.submission.imageUrls"
-        [src]="imgUrl"
-        alt="submission preview"
-      />
-    </div>
-    <div *ngIf="data.submission.mediaVideo" class="card-body">
-      <video
-        class="submission-media"
-        #videoElem
-        (playing)="onMediaPlaying()"
-        (pause)="onMediaPause()"
-        (seeked)="onMediaSeekCompletion($event)"
-        controls
+      <div
+        *ngIf="
+          data.submission.imageUrls && data.submission.imageUrls.length > 0
+        "
+        class="card-body"
       >
-        <source [src]="data.submission.mediaVideo" />
-      </video>
-      <audio #audioElem *ngIf="data.submission.videoAudio">
-        <source [src]="data.submission.videoAudio" />
-      </audio>
-    </div>
-    <div
-      *ngIf="data.submission.mediaSafeHtml"
-      [innerHTML]="data.submission.mediaSafeHtml"
-      class="card-body"
-    ></div>
-  </a>
+        <img
+          class="submission-media"
+          *ngFor="let imgUrl of data.submission.imageUrls"
+          [src]="imgUrl"
+          alt="submission preview"
+        />
+      </div>
+      <div *ngIf="data.submission.mediaVideo" class="card-body">
+        <video
+          class="submission-media"
+          #videoElem
+          (playing)="onMediaPlaying()"
+          (pause)="onMediaPause()"
+          (seeked)="onMediaSeekCompletion($event)"
+          controls
+        >
+          <source [src]="data.submission.mediaVideo" />
+        </video>
+        <audio #audioElem *ngIf="data.submission.videoAudio">
+          <source [src]="data.submission.videoAudio" />
+        </audio>
+      </div>
+      <div
+        *ngIf="data.submission.mediaSafeHtml"
+        [innerHTML]="data.submission.mediaSafeHtml"
+        class="card-body"
+      ></div>
+    </a>
+  </div>
 </div>
