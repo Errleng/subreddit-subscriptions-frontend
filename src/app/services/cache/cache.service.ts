@@ -11,21 +11,32 @@ export class CacheService {
     private cache: Map<string, ISubmission> = new Map();
 
     constructor() {
-        this.loadCache();
+        const savedCache = this.getCache();
+        if (savedCache !== null) {
+            this.cache = savedCache;
+        }
         this.removeOldSubmissions();
     }
 
-    saveCache(): void {
+    saveCache(overwriteNewer: boolean): void {
+        if (!overwriteNewer) {
+            const savedCache = this.getCache();
+            // cache can only grow in size after being pruned on load
+            if (savedCache !== null && savedCache.size > this.cache.size) {
+                console.debug('prevented overwriting a newer cache', savedCache, 'with an older cache', this.cache);
+                return;
+            }
+        }
         localStorage.setItem(this.cacheKey, JSON.stringify([...this.cache]));
     };
 
-    loadCache(): void {
+    getCache(): Map<string, ISubmission> | null {
         const cacheJson = localStorage.getItem(this.cacheKey);
         if (cacheJson === null) {
-            console.error('could not load cache');
-            return;
+            console.warn('could not find cache');
+            return null;
         }
-        this.cache = new Map(JSON.parse(cacheJson));
+        return new Map(JSON.parse(cacheJson));
     }
 
     addSubmission(submission: ISubmission): void {
@@ -47,5 +58,6 @@ export class CacheService {
                 this.cache.delete(id);
             }
         }
+        this.saveCache(true);
     }
 }

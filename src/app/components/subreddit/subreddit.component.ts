@@ -123,7 +123,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                         this.submissionDatas = sortedDatas;
                     }
 
-                    this.cacheService.saveCache();
+                    this.cacheService.saveCache(false);
                 },
             });
     }
