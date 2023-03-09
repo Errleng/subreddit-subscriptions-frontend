@@ -26,6 +26,7 @@ export class CacheService {
                 console.debug('prevented overwriting a newer cache', savedCache, 'with an older cache', this.cache);
                 return;
             }
+            console.debug('overwriting old cache', savedCache, 'with newer one', this.cache);
         }
         localStorage.setItem(this.cacheKey, JSON.stringify([...this.cache]));
     };
