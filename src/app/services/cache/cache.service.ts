@@ -28,7 +28,11 @@ export class CacheService {
             }
             console.debug('overwriting old cache', savedCache, 'with newer one', this.cache);
         }
-        localStorage.setItem(this.cacheKey, JSON.stringify([...this.cache]));
+        try {
+            localStorage.setItem(this.cacheKey, JSON.stringify([...this.cache]));
+        } catch (e) {
+            console.error('caught error while saving cache, possibly out of space:', e);
+        }
     };
 
     getCache(): Map<string, ISubmission> | null {
