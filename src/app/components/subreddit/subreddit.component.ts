@@ -102,7 +102,26 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
             )
             .subscribe({
                 next: (data: object) => {
-                    const submissions: ISubmission[] = Object.values(data);
+                    const castData: ISubmission[] = Object.values(data);
+                    const submissions: ISubmission[] = [];
+                    for (const sub of castData) {
+                        const strippedSub: ISubmission = {
+                            lastUpdateTime: sub.lastUpdateTime,
+                            imageUrls: sub.imageUrls,
+                            mediaVideo: sub.mediaVideo,
+                            mediaHtml: sub.mediaHtml,
+                            id: sub.id,
+                            title: sub.title,
+                            score: sub.score,
+                            upvote_ratio: sub.upvote_ratio,
+                            num_comments: sub.num_comments,
+                            removed_by_category: sub.removed_by_category,
+                            created_utc: sub.created_utc,
+                            videoAudio: null,
+                            mediaSafeHtml: null
+                        };
+                        submissions.push(strippedSub);
+                    }
 
                     this.submissionDatas = [];
                     for (const submission of submissions) {

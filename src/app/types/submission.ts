@@ -13,8 +13,8 @@ export interface ISubmission {
     removed_by_category: string,
     created_utc: number,
     // used for displaying
-    videoAudio: string;
-    mediaSafeHtml: SafeHtml;
+    videoAudio: string | null;
+    mediaSafeHtml: SafeHtml | null;
 }
 
 export interface ISubmissionData {
