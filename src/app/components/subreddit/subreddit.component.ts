@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { CacheService } from 'src/app/services/cache/cache.service';
 import { RedditService } from 'src/app/services/reddit/reddit.service';
-import { SettingsService } from 'src/app/services/settings/settings.service';
+import { ISubredditSetting, SettingsService } from 'src/app/services/settings/settings.service';
 import { ISubmission, ISubmissionData } from 'src/app/types/submission';
 import { SubmissionComponent } from '../submission/submission.component';
 
@@ -16,13 +16,11 @@ import { SubmissionComponent } from '../submission/submission.component';
     styleUrls: ['./subreddit.component.css'],
 })
 export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, FocusableOption {
-    private _sortTime: string = 'day';
-
     private keyEventManager!: FocusKeyManager<SubmissionComponent>;
 
     private sub!: Subscription;
 
-    @Input() name: string = '';
+    @Input() setting: ISubredditSetting = { name: '', sortTime: 'day' };
     @Output() focusEvent = new EventEmitter();
 
     @ViewChild('subredditTitle') subredditTitle!: ElementRef;
@@ -34,11 +32,11 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     disabled?: boolean | undefined;
 
     get sortTime(): string {
-        return this._sortTime;
+        return this.setting.sortTime;
     }
 
     set sortTime(newSortTime: string) {
-        this._sortTime = newSortTime;
+        this.setting.sortTime = newSortTime;
         this.loadData();
     }
 
@@ -92,10 +90,10 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     loadData(): void {
         const randomDelay = this.randomIntBetween(5000, 60000);
-        this.sub = this.redditService.getSubmissions(this.name, this.sortTime)
+        this.sub = this.redditService.getSubmissions(this.setting.name, this.setting.sortTime)
             .pipe(
                 retryWhen((errors) => errors.pipe(
-                    tap((err: Error) => console.error(`Error getting data for r/${this.name} submission:`, err, `retrying in ${randomDelay}ms`)),
+                    tap((err: Error) => console.error(`Error getting data for r/${this.setting.name} submission:`, err, `retrying in ${randomDelay}ms`)),
                     delay(randomDelay),
                     take(4)
                 )),

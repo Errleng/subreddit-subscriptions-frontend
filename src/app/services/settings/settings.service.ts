@@ -1,90 +1,82 @@
 import { Injectable } from '@angular/core';
 
 export interface ISettings {
-  scrollSubredditUpKey: string;
-  scrollSubredditDownKey: string;
-  scrollSubmissionUpKey: string;
-  scrollSubmissionDownKey: string;
-  openSubmissionKey: string;
+    scrollSubredditUpKey: string;
+    scrollSubredditDownKey: string;
+    scrollSubmissionUpKey: string;
+    scrollSubmissionDownKey: string;
+    openSubmissionKey: string;
+    subredditSettings: ISubredditSetting[];
+}
+
+export interface ISubredditSetting {
+    name: string;
+    sortTime: string;
 }
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class SettingsService {
-  private readonly settingsListKey: string = 'settings';
+    private readonly settingsListKey: string = 'settings';
 
-  private readonly subredditListKey: string = 'subredditNames';
+    private readonly settingsListFile: string = 'settings.json';
 
-  private readonly subredditListFile: string = 'subreddit-names.json';
+    private settings: ISettings;
 
-  private readonly settingsListFile: string = 'subreddit-subscriptions-settings.json';
-
-  constructor() { }
-
-  download(content: string, fileName: string, contentType: string): void {
-    const anchor = document.createElement('a');
-    const file = new Blob([content], { type: contentType });
-    anchor.href = URL.createObjectURL(file);
-    anchor.download = fileName;
-    anchor.click();
-  }
-
-  getSettings(): ISettings | null {
-    const settingsJson = localStorage.getItem(this.settingsListKey);
-    if (settingsJson !== null) {
-      return JSON.parse(settingsJson);
+    constructor() {
+        this.settings = this.loadSettings();
     }
-    return null;
-  }
 
-  updateSettings(settings: ISettings): void {
-    localStorage.setItem(this.settingsListKey, JSON.stringify(settings));
-  }
-
-  async importSettings(file: File): Promise<string[]> {
-    return new Promise<string[]>((resolve) => {
-      const fileReader: FileReader = new FileReader();
-      fileReader.onload = () => {
-        if (fileReader.result) {
-          const subredditNames = JSON.parse(fileReader.result as string);
-          resolve(subredditNames);
+    private loadSettings(): ISettings {
+        const settingsJson = localStorage.getItem(this.settingsListKey);
+        if (settingsJson !== null) {
+            return JSON.parse(settingsJson);
         }
-      };
-      fileReader.readAsText(file);
-    });
-  }
-
-  exportSettings(settings: object): void {
-    this.download(JSON.stringify(settings), this.settingsListFile, 'application/json');
-  }
-
-  getSubredditList(): string[] | null {
-    const subredditListJson = localStorage.getItem(this.subredditListKey);
-    if (subredditListJson !== null) {
-      return JSON.parse(subredditListJson);
+        return {
+            openSubmissionKey: '',
+            scrollSubmissionDownKey: '',
+            scrollSubmissionUpKey: '',
+            scrollSubredditDownKey: '',
+            scrollSubredditUpKey: '',
+            subredditSettings: [
+                { name: 'aww', sortTime: 'day' },
+                { name: 'food', sortTime: 'day' },
+                { name: 'books', sortTime: 'day' },
+            ],
+        };
     }
-    return null;
-  }
 
-  updateSubredditList(subredditNames: string[]): void {
-    localStorage.setItem(this.subredditListKey, JSON.stringify(subredditNames));
-  }
+    download(content: string, fileName: string, contentType: string): void {
+        const anchor = document.createElement('a');
+        const file = new Blob([content], { type: contentType });
+        anchor.href = URL.createObjectURL(file);
+        anchor.download = fileName;
+        anchor.click();
+    }
 
-  async importSubredditList(file: File): Promise<string[]> {
-    return new Promise<string[]>((resolve) => {
-      const fileReader: FileReader = new FileReader();
-      fileReader.onload = () => {
-        if (fileReader.result) {
-          const subredditNames = JSON.parse(fileReader.result as string);
-          resolve(subredditNames);
-        }
-      };
-      fileReader.readAsText(file);
-    });
-  }
+    getSettings(): ISettings {
+        return this.settings;
+    }
 
-  exportSubredditList(subredditNames: string[]): void {
-    this.download(JSON.stringify(subredditNames), this.subredditListFile, 'application/json');
-  }
+    saveSettings(): void {
+        localStorage.setItem(this.settingsListKey, JSON.stringify(this.getSettings()));
+    }
+
+    async importSettings(file: File): Promise<ISettings> {
+        return new Promise<ISettings>((resolve) => {
+            const fileReader: FileReader = new FileReader();
+            fileReader.onload = () => {
+                if (fileReader.result) {
+                    this.settings = JSON.parse(fileReader.result as string);
+                    resolve(this.settings);
+                }
+            };
+            fileReader.readAsText(file);
+        });
+    }
+
+    exportSettings(): void {
+        this.download(JSON.stringify(this.getSettings()), this.settingsListFile, 'application/json');
+    }
 }

@@ -46,7 +46,7 @@ export class SubmissionComponent implements OnInit, FocusableOption {
         this.shortlink = `https://redd.it/${submission.id}`;
         const { mediaVideo } = submission;
         if (mediaVideo && mediaVideo.includes('v.redd.it')) {
-            submission.videoAudio = `${mediaVideo.substring(0, mediaVideo.lastIndexOf('/'))}/DASH_audio.mp4`;
+            submission.videoAudio = `${mediaVideo.substring(0, mediaVideo.lastIndexOf('/'))}/DASH_AUDIO_128.mp4`;
         }
         if (submission.mediaHtml) {
             submission.mediaSafeHtml = this.sanitizer.bypassSecurityTrustHtml(submission.mediaHtml);

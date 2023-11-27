@@ -20,37 +20,41 @@
 <div class="form-group">
   <label for="subredditListFile" class="btn btn-primary">Import</label>
   <input
-    (change)="importSubredditList($event)"
+    (change)="importSettings($event)"
     id="subredditListFile"
     type="file"
     class="form-control file-input"
   />
-  <button (click)="exportSubredditList()" class="btn btn-primary">
-    Export
-  </button>
+  <button (click)="exportSettings()" class="btn btn-primary">Export</button>
   <button (click)="clearAllSubs()" class="btn btn-primary">Clear all</button>
 </div>
 <div class="mt-3 mb-3 list-group">
   <ol cdkDropList (cdkDropListDropped)="dropSub($event)">
     <li
       class="subreddit-list-item"
-      *ngFor="let name of subredditNames; let i = index"
+      *ngFor="
+        let subreddit of settingsService.getSettings().subredditSettings;
+        let i = index
+      "
       cdkDrag
     >
       <button (click)="removeSub(i)" class="btn btn-light" type="button">
         <fa-icon [icon]="faTrash"></fa-icon>
       </button>
-      r/{{ name }}
+      r/{{ subreddit.name }}
     </li>
   </ol>
 </div>
 <div class="subreddit-list">
   <div
     (keydown)="onKeyDown($event)"
-    *ngFor="let name of subredditNames; index as i"
+    *ngFor="
+      let subreddit of settingsService.getSettings().subredditSettings;
+      index as i
+    "
   >
     <ss-subreddit
-      [name]="name"
+      [setting]="subreddit"
       (focusEvent)="onSubredditFocus(i)"
     ></ss-subreddit>
   </div>

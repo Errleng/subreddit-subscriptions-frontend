@@ -3,30 +3,33 @@ import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms
 import { SettingsService } from 'src/app/services/settings/settings.service';
 
 @Component({
-  selector: 'ss-settings-dialog',
-  templateUrl: './settings-dialog.component.html',
-  styleUrls: ['./settings-dialog.component.css']
+    selector: 'ss-settings-dialog',
+    templateUrl: './settings-dialog.component.html',
+    styleUrls: ['./settings-dialog.component.css']
 })
 export class SettingsDialogComponent implements OnInit {
-  public settingsForm!: UntypedFormGroup;
+    public settingsForm!: UntypedFormGroup;
 
-  constructor(private settingsService: SettingsService) { }
+    constructor(private settingsService: SettingsService) { }
 
-  ngOnInit(): void {
-    this.settingsForm = new UntypedFormGroup({
-      scrollSubredditUpKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubredditDownKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubmissionUpKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      scrollSubmissionDownKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-      openSubmissionKey: new UntypedFormControl('', [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-    })
-    const settings = this.settingsService.getSettings();
-    if (settings !== null) {
-      this.settingsForm.setValue(settings);
+    ngOnInit(): void {
+        const settings = this.settingsService.getSettings();
+        this.settingsForm = new UntypedFormGroup({
+            scrollSubredditUpKey: new UntypedFormControl(settings.scrollSubredditUpKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+            scrollSubredditDownKey: new UntypedFormControl(settings.scrollSubredditDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+            scrollSubmissionUpKey: new UntypedFormControl(settings.scrollSubmissionUpKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+            scrollSubmissionDownKey: new UntypedFormControl(settings.scrollSubredditDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+            openSubmissionKey: new UntypedFormControl(settings.openSubmissionKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+        });
     }
-  }
 
-  onSave(): void {
-    this.settingsService.updateSettings(this.settingsForm.value);
-  }
+    onSave(): void {
+        const settings = this.settingsService.getSettings();
+        settings.openSubmissionKey = this.settingsForm.get('openSubmissionKey')?.value;
+        settings.scrollSubredditUpKey = this.settingsForm.get('scrollSubredditUpKey')?.value;
+        settings.scrollSubredditDownKey = this.settingsForm.get('scrollSubredditDownKey')?.value;
+        settings.scrollSubmissionUpKey = this.settingsForm.get('scrollSubmissionUpKey')?.value;
+        settings.scrollSubmissionDownKey = this.settingsForm.get('scrollSubmissionDownKey')?.value;
+        this.settingsService.saveSettings();
+    }
 }
