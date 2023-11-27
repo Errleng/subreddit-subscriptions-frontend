@@ -18,7 +18,7 @@ export class SettingsDialogComponent implements OnInit {
             scrollSubredditUpKey: new UntypedFormControl(settings.scrollSubredditUpKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
             scrollSubredditDownKey: new UntypedFormControl(settings.scrollSubredditDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
             scrollSubmissionUpKey: new UntypedFormControl(settings.scrollSubmissionUpKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
-            scrollSubmissionDownKey: new UntypedFormControl(settings.scrollSubredditDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
+            scrollSubmissionDownKey: new UntypedFormControl(settings.scrollSubmissionDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
             openSubmissionKey: new UntypedFormControl(settings.openSubmissionKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
         });
     }
