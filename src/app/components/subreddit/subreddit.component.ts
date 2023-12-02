@@ -37,6 +37,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     set sortTime(newSortTime: string) {
         this.setting.sortTime = newSortTime;
+        this.settingsService.saveSettings();
         this.loadData();
     }
 
