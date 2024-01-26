@@ -37,8 +37,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     set sortTime(newVal: string) {
         this.setting.sortTime = newVal;
-        this.settingsService.saveSettings();
-        this.loadData();
+        this.saveSettingsAndLoad();
     }
 
     constructor(private redditService: RedditService, private settingsService: SettingsService, private cacheService: CacheService) { }
@@ -87,6 +86,11 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                     break;
             }
         }
+    }
+
+    saveSettingsAndLoad(): void {
+        this.settingsService.saveSettings();
+        this.loadData();
     }
 
     loadData(): void {

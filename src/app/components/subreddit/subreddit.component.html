@@ -6,7 +6,9 @@
     r/{{ setting.name }}
   </h3>
   <div class="d-flex flex-row">
-    <button (click)="loadData()" class="btn btn-secondary">Reload</button>
+    <button (click)="saveSettingsAndLoad()" class="btn btn-secondary">
+      Reload
+    </button>
     <select [(ngModel)]="sortTime" class="form-select w-auto">
       <option value="hour">Hour</option>
       <option value="day">Day</option>
