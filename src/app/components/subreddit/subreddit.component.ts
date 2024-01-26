@@ -20,7 +20,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     private sub!: Subscription;
 
-    @Input() setting: ISubredditSetting = { name: '', sortTime: 'day' };
+    @Input() setting: ISubredditSetting = { name: '', sortTime: 'day', limit: 10 };
     @Output() focusEvent = new EventEmitter();
 
     @ViewChild('subredditTitle') subredditTitle!: ElementRef;
@@ -35,8 +35,8 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
         return this.setting.sortTime;
     }
 
-    set sortTime(newSortTime: string) {
-        this.setting.sortTime = newSortTime;
+    set sortTime(newVal: string) {
+        this.setting.sortTime = newVal;
         this.settingsService.saveSettings();
         this.loadData();
     }
@@ -91,7 +91,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     loadData(): void {
         const randomDelay = this.randomIntBetween(5000, 60000);
-        this.sub = this.redditService.getSubmissions(this.setting.name, this.setting.sortTime)
+        this.sub = this.redditService.getSubmissions(this.setting.name, this.setting.sortTime, this.setting.limit)
             .pipe(
                 retryWhen((errors) => errors.pipe(
                     tap((err: Error) => console.error(`Error getting data for r/${this.setting.name} submission:`, err, `retrying in ${randomDelay}ms`)),

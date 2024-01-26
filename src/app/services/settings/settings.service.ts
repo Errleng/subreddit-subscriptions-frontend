@@ -12,6 +12,7 @@ export interface ISettings {
 export interface ISubredditSetting {
     name: string;
     sortTime: string;
+    limit: number;
 }
 
 @Injectable({
@@ -40,9 +41,9 @@ export class SettingsService {
             scrollSubredditDownKey: '',
             scrollSubredditUpKey: '',
             subredditSettings: [
-                { name: 'aww', sortTime: 'day' },
-                { name: 'food', sortTime: 'day' },
-                { name: 'books', sortTime: 'day' },
+                { name: 'aww', sortTime: 'day', limit: 10 },
+                { name: 'food', sortTime: 'day', limit: 10 },
+                { name: 'books', sortTime: 'day', limit: 10 },
             ],
         };
     }

@@ -15,6 +15,12 @@
       <option value="year">Year</option>
       <option value="all">All time</option>
     </select>
+    <input
+      id="limitField"
+      [(ngModel)]="setting.limit"
+      type="number"
+      class="form-control"
+    />
   </div>
   <div>
     <ss-submission

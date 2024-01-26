@@ -2,6 +2,10 @@ h2:focus {
   border: 1px solid black;
 }
 
-.btn {
-  margin-right: 10px;
+.d-flex {
+  gap: 10px;
+}
+
+#limitField {
+  width: 100px;
 }

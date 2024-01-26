@@ -13,7 +13,7 @@ export class RedditService {
         return this.http.get(`${environment.apiUrl}/api/valid/subreddit/${name}`, { observe: 'response' });
     }
 
-    public getSubmissions(name: string, sortTime: string): Observable<object> {
-        return this.http.get(`${environment.apiUrl}/api/subreddit/${name}/top/${sortTime}/10`);
+    public getSubmissions(name: string, sortTime: string, limit: number): Observable<object> {
+        return this.http.get(`${environment.apiUrl}/api/subreddit/${name}/top/${sortTime}/${limit}`);
     }
 }

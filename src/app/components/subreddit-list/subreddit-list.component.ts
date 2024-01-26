@@ -67,7 +67,8 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
                     const settings = this.settingsService.getSettings();
                     settings.subredditSettings.push({
                         name: subName,
-                        sortTime: 'day'
+                        sortTime: 'day',
+                        limit: 10
                     });
                     this.settingsService.saveSettings();
                 } else {
