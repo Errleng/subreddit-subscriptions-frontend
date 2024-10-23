@@ -22,7 +22,11 @@
       </h4>
     </div>
     <div class="text-secondary">
-      {{ data.submission.score }} votes,
+      {{ data.submission.score }}
+      <span *ngIf="newScoreIncrease > 0" class="highlight">
+        (+{{ newScoreIncrease }})</span
+      >
+      votes,
       <span [ngClass]="{ highlight: data.submission.upvote_ratio <= 0.7 }"
         >{{ data.submission.upvote_ratio * 100 | number : "1.0-0" }}%
         upvoted</span

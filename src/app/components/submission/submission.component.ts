@@ -26,6 +26,7 @@ export class SubmissionComponent implements OnInit, FocusableOption {
     disabled?: boolean | undefined;
 
     numNewComments = 0;
+    newScoreIncrease = 0;
     hoursSinceCreation = 0;
 
     constructor(private sanitizer: DomSanitizer) { }
@@ -41,6 +42,7 @@ export class SubmissionComponent implements OnInit, FocusableOption {
 
         if (oldSubmission !== null) {
             this.numNewComments = submission.num_comments - oldSubmission.num_comments;
+            this.newScoreIncrease = submission.score - oldSubmission.score;
         }
 
         this.shortlink = `https://redd.it/${submission.id}`;
