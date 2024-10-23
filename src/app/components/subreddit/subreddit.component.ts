@@ -60,8 +60,12 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     }
 
     focus(origin?: FocusOrigin): void {
-        this.subredditTitle.nativeElement.focus({ preventScroll: true });
-        this.subredditTitle.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+        // this.subredditTitle.nativeElement.focus({ preventScroll: true });
+        // this.subredditTitle.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+        if (this.keyEventManager.activeItem === null) {
+            this.keyEventManager.setFirstItemActive();
+        }
+        this.keyEventManager.activeItem?.focus();
     }
 
     onSubmissionFocus(index: number): void {
