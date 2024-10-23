@@ -151,9 +151,23 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     }
 
     openCurrentItem(): void {
+        const isFirefox = window.navigator.userAgent.includes('Firefox');
         const url = this.keyEventManager.activeItem?.shortlink;
-        if (url !== undefined) {
-            window.open(url);
+        if (url === undefined) {
+            return;
         }
+        if (isFirefox) {
+            // Can open tab in background while retaining focus on the current tab
+            const a = document.createElement('a');
+            a.href = url;
+            a.target = '_blank';
+            const e = new MouseEvent('click', {
+                ctrlKey: true, // for Windows or Linux
+                metaKey: true, // for MacOS
+            });
+            a.dispatchEvent(e);
+            return;
+        }
+        window.open(url);
     }
 }
