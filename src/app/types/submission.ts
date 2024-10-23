@@ -19,5 +19,10 @@ export interface ISubmission {
 
 export interface ISubmissionData {
     submission: ISubmission;
-    oldSubmission: ISubmission | null;
+    cachedSubmission: ICachedSubmission | null;
+}
+
+export interface ICachedSubmission {
+    submission: ISubmission,
+    isSeen: boolean;
 }

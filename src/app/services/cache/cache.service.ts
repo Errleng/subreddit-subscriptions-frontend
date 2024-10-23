@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ISubmission } from 'src/app/types/submission';
+import { ICachedSubmission, ISubmission } from 'src/app/types/submission';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -8,14 +8,14 @@ import { environment } from 'src/environments/environment';
 export class CacheService {
     private readonly cacheKey: string = 'cache';
     private readonly lifetimeMs: number = environment.cacheLifetimeHours * 1000 * 60 * 60; // 48 hours
-    private cache: Map<string, ISubmission> = new Map();
+    private cache: Map<string, ICachedSubmission> = new Map();
 
     constructor() {
         const savedCache = this.getCache();
         if (savedCache !== null) {
             this.cache = savedCache;
         }
-        this.removeOldSubmissions();
+        this.removecachedSubmissions();
     }
 
     saveCache(overwriteNewer: boolean): void {
@@ -35,7 +35,7 @@ export class CacheService {
         }
     };
 
-    getCache(): Map<string, ISubmission> | null {
+    getCache(): Map<string, ICachedSubmission> | null {
         const cacheJson = localStorage.getItem(this.cacheKey);
         if (cacheJson === null) {
             console.warn('could not find cache');
@@ -44,21 +44,23 @@ export class CacheService {
         return new Map(JSON.parse(cacheJson));
     }
 
-    addSubmission(submission: ISubmission): void {
+    addSubmission(cachedSubmission: ICachedSubmission): void {
+        const submission = cachedSubmission.submission;
         if (!environment.cacheOverwrite && this.cache.has(submission.id)) {
             return;
         }
-        this.cache.set(submission.id, submission);
+        this.cache.set(submission.id, cachedSubmission);
     };
 
-    getSubmission(submissionId: string): ISubmission | undefined {
+    getSubmission(submissionId: string): ICachedSubmission | undefined {
         return this.cache.get(submissionId);
     };
 
-    removeOldSubmissions(): void {
+    removecachedSubmissions(): void {
         const now = Date.now();
-        for (const [id, submission] of this.cache) {
-            const msSinceCreation = now - (submission.created_utc * 1000);
+        console.log(this.cache);
+        for (const [id, { submission: sub }] of this.cache) {
+            const msSinceCreation = now - (sub.created_utc * 1000);
             if (msSinceCreation >= this.lifetimeMs) {
                 this.cache.delete(id);
             }

@@ -48,6 +48,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     ngAfterViewInit(): void {
         this.keyEventManager = new FocusKeyManager(this.submissions);
+        this.keyEventManager.skipPredicate((item) => !item.isVisible);
     }
 
     ngOnDestroy(): void {
@@ -129,14 +130,21 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                     this.submissionDatas = [];
                     for (const submission of submissions) {
                         const cachedSubmission = this.cacheService.getSubmission(submission.id);
-                        this.cacheService.addSubmission(submission);
                         const subData: ISubmissionData = {
                             submission,
-                            oldSubmission: null,
+                            cachedSubmission: null,
                         };
+
+                        let isSeen = false;
                         if (cachedSubmission !== undefined) {
-                            subData.oldSubmission = cachedSubmission;
+                            subData.cachedSubmission = cachedSubmission;
+                            isSeen = cachedSubmission.isSeen;
                         }
+                        this.cacheService.addSubmission({
+                            submission: submission,
+                            isSeen: isSeen
+                        });
+
                         this.submissionDatas.push(subData);
                     }
                     const sortedDatas = [...this.submissionDatas].sort((a, b) => a.submission.score - b.submission.score).reverse();

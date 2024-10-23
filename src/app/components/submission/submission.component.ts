@@ -3,6 +3,8 @@ import {
     Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { CacheService } from 'src/app/services/cache/cache.service';
+import { SettingsService } from 'src/app/services/settings/settings.service';
 import { ISubmissionData } from 'src/app/types/submission';
 
 @Component({
@@ -22,27 +24,36 @@ export class SubmissionComponent implements OnInit, FocusableOption {
     @ViewChild('audioElem') audioElem!: ElementRef;
 
     shortlink: string = '';
-
-    disabled?: boolean | undefined;
+    isVisible: boolean = true;
 
     numNewComments = 0;
     newScoreIncrease = 0;
     hoursSinceCreation = 0;
 
-    constructor(private sanitizer: DomSanitizer) { }
+    constructor(private sanitizer: DomSanitizer,
+        private settingsService: SettingsService,
+        private cacheService: CacheService,
+    ) { }
 
     ngOnInit(): void {
+        const settings = this.settingsService.getSettings();
         if (this.data === null) {
             console.error('Submission data is null', this);
         }
         const submission = this.data.submission;
-        const oldSubmission = this.data.oldSubmission;
+        const cachedSubmission = this.data.cachedSubmission;
 
         this.hoursSinceCreation = Math.floor((Date.now() - submission.created_utc * 1000) / (1000 * 60 * 60));
 
-        if (oldSubmission !== null) {
+        if (cachedSubmission !== null) {
+            const oldSubmission = cachedSubmission.submission;
             this.numNewComments = submission.num_comments - oldSubmission.num_comments;
             this.newScoreIncrease = submission.score - oldSubmission.score;
+            const newCommentsIsInteresting = submission.num_comments > oldSubmission.num_comments * 1.25;
+            const newScoreIsInteresting = submission.score > oldSubmission.score * 1.25;
+            if (settings.shouldFilterSeenSubmissions && this.data.cachedSubmission?.isSeen && !newCommentsIsInteresting && !newScoreIsInteresting) {
+                this.isVisible = false;
+            }
         }
 
         this.shortlink = `https://redd.it/${submission.id}`;
@@ -65,6 +76,10 @@ export class SubmissionComponent implements OnInit, FocusableOption {
 
     onFocus(): void {
         this.focusEvent.emit();
+        const cachedSubmission = this.cacheService.getSubmission(this.data.submission.id);
+        if (cachedSubmission !== undefined) {
+            cachedSubmission.isSeen = true;
+        }
     }
 
     onMediaPlaying() {

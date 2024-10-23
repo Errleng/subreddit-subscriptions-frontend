@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export interface ISettings {
+    shouldFilterSeenSubmissions: boolean;
     scrollSubredditUpKey: string;
     scrollSubredditDownKey: string;
     scrollSubmissionUpKey: string;
@@ -35,6 +36,7 @@ export class SettingsService {
             return JSON.parse(settingsJson);
         }
         return {
+            shouldFilterSeenSubmissions: false,
             openSubmissionKey: '',
             scrollSubmissionDownKey: '',
             scrollSubmissionUpKey: '',
@@ -61,7 +63,10 @@ export class SettingsService {
     }
 
     saveSettings(): void {
-        localStorage.setItem(this.settingsListKey, JSON.stringify(this.getSettings()));
+        localStorage.setItem(
+            this.settingsListKey,
+            JSON.stringify(this.getSettings()),
+        );
     }
 
     async importSettings(file: File): Promise<ISettings> {
@@ -78,6 +83,10 @@ export class SettingsService {
     }
 
     exportSettings(): void {
-        this.download(JSON.stringify(this.getSettings()), this.settingsListFile, 'application/json');
+        this.download(
+            JSON.stringify(this.getSettings()),
+            this.settingsListFile,
+            'application/json',
+        );
     }
 }

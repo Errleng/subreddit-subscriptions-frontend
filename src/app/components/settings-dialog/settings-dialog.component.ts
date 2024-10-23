@@ -10,10 +10,13 @@ import { SettingsService } from 'src/app/services/settings/settings.service';
 export class SettingsDialogComponent implements OnInit {
     public settingsForm!: UntypedFormGroup;
 
+    shouldFilterSeenSubmissions: boolean = false;
+
     constructor(private settingsService: SettingsService) { }
 
     ngOnInit(): void {
         const settings = this.settingsService.getSettings();
+        this.shouldFilterSeenSubmissions = settings.shouldFilterSeenSubmissions;
         this.settingsForm = new UntypedFormGroup({
             scrollSubredditUpKey: new UntypedFormControl(settings.scrollSubredditUpKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
             scrollSubredditDownKey: new UntypedFormControl(settings.scrollSubredditDownKey, [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)]),
@@ -25,6 +28,7 @@ export class SettingsDialogComponent implements OnInit {
 
     onSave(): void {
         const settings = this.settingsService.getSettings();
+        settings.shouldFilterSeenSubmissions = this.shouldFilterSeenSubmissions;
         settings.openSubmissionKey = this.settingsForm.get('openSubmissionKey')?.value;
         settings.scrollSubredditUpKey = this.settingsForm.get('scrollSubredditUpKey')?.value;
         settings.scrollSubredditDownKey = this.settingsForm.get('scrollSubredditDownKey')?.value;
