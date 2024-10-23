@@ -79,6 +79,8 @@ export class SubmissionComponent implements OnInit, FocusableOption {
         const cachedSubmission = this.cacheService.getSubmission(this.data.submission.id);
         if (cachedSubmission !== undefined) {
             cachedSubmission.isSeen = true;
+            cachedSubmission.submission.score = this.data.submission.score;
+            cachedSubmission.submission.num_comments = this.data.submission.num_comments;
             this.cacheService.saveCache(false);
         }
     }
