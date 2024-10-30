@@ -15,7 +15,7 @@ export class CacheService {
         if (savedCache !== null) {
             this.cache = savedCache;
         }
-        this.removecachedSubmissions();
+        this.removeCachedSubmissions();
     }
 
     saveCache(overwriteNewer: boolean): void {
@@ -56,11 +56,11 @@ export class CacheService {
         return this.cache.get(submissionId);
     };
 
-    removecachedSubmissions(): void {
+    removeCachedSubmissions(): void {
         const now = Date.now();
         console.log(this.cache);
-        for (const [id, { submission: sub }] of this.cache) {
-            const msSinceCreation = now - (sub.created_utc * 1000);
+        for (const [id, { createdAt }] of this.cache) {
+            const msSinceCreation = now - createdAt;
             if (msSinceCreation >= this.lifetimeMs) {
                 this.cache.delete(id);
             }

@@ -24,5 +24,6 @@ export interface ISubmissionData {
 
 export interface ICachedSubmission {
     submission: ISubmission,
+    createdAt: number,
     isSeen: boolean;
 }

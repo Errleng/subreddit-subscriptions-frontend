@@ -149,6 +149,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                         }
                         this.cacheService.addSubmission({
                             submission: submission,
+                            createdAt: Date.now(),
                             isSeen: isSeen
                         });
 
