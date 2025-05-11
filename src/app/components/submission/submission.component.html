@@ -18,6 +18,11 @@
                         seen: data.cachedSubmission?.isSeen
                     }"
                 >
+                    <span *ngIf="data.submission.num_images > 1">
+                        <fa-icon [icon]="faImage"></fa-icon>
+                        {{ data.submission.num_images }} -</span
+                    >
+
                     {{ data.submission.title }}
                 </a>
             </h4>

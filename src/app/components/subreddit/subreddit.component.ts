@@ -129,6 +129,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                             score: sub.score,
                             upvote_ratio: sub.upvote_ratio,
                             num_comments: sub.num_comments,
+                            num_images: sub.num_images,
                             removed_by_category: sub.removed_by_category,
                             created_utc: sub.created_utc,
                             videoAudio: null,

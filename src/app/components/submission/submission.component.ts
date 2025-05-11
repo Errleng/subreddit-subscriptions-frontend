@@ -7,13 +7,16 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { CacheService } from 'src/app/services/cache/cache.service';
 import { SettingsService } from 'src/app/services/settings/settings.service';
 import { ISubmissionData } from 'src/app/types/submission';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faImage } from '@fortawesome/free-regular-svg-icons';
+
 
 @Component({
     selector: 'ss-submission',
     templateUrl: './submission.component.html',
     styleUrls: ['./submission.component.css'],
     encapsulation: ViewEncapsulation.None,
-    imports: [CommonModule]
+    imports: [CommonModule, FontAwesomeModule]
 })
 export class SubmissionComponent implements OnInit, FocusableOption {
     @Input() data!: ISubmissionData;
@@ -31,6 +34,8 @@ export class SubmissionComponent implements OnInit, FocusableOption {
     numNewComments = 0;
     newScoreIncrease = 0;
     hoursSinceCreation = 0;
+
+    faImage = faImage;
 
     constructor(private sanitizer: DomSanitizer,
         private settingsService: SettingsService,

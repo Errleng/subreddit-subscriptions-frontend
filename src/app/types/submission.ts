@@ -10,6 +10,7 @@ export interface ISubmission {
     score: number,
     upvote_ratio: number,
     num_comments: number,
+    num_images: number,
     removed_by_category: string,
     created_utc: number,
     // used for displaying
