@@ -1,19 +1,24 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
     AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FormsModule } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faTrashCan } from '@fortawesome/free-regular-svg-icons';
 import { Subscription } from 'rxjs';
 import { RedditService } from 'src/app/services/reddit/reddit.service';
 import { SettingsService } from 'src/app/services/settings/settings.service';
 import { SubredditComponent } from '../subreddit/subreddit.component';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'ss-subreddit-list',
     templateUrl: './subreddit-list.component.html',
     styleUrls: ['./subreddit-list.component.css'],
+    imports: [FontAwesomeModule, SubredditComponent, MatExpansionModule, FormsModule, DragDropModule, CommonModule],
 })
 export class SubredditListComponent implements OnInit, AfterViewInit {
     private keyEventManager!: FocusKeyManager<SubredditComponent>;
@@ -21,7 +26,7 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
     @ViewChildren(SubredditComponent) subreddits!: QueryList<SubredditComponent>;
     @ViewChild('subreddits') subredditsEl!: ElementRef<HTMLElement>;
 
-    faTrash = faTrash;
+    faTrashCan = faTrashCan;
 
     searchSubName: string = '';
 

@@ -9,11 +9,14 @@ import { RedditService } from 'src/app/services/reddit/reddit.service';
 import { ISubredditSetting, SettingsService } from 'src/app/services/settings/settings.service';
 import { ISubmission, ISubmissionData } from 'src/app/types/submission';
 import { SubmissionComponent } from '../submission/submission.component';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
     selector: 'ss-subreddit',
     templateUrl: './subreddit.component.html',
     styleUrls: ['./subreddit.component.css'],
+    imports: [CommonModule, FormsModule, SubmissionComponent],
 })
 export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, FocusableOption {
     private keyEventManager!: FocusKeyManager<SubmissionComponent>;

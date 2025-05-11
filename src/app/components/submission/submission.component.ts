@@ -1,4 +1,5 @@
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
+import { CommonModule } from '@angular/common';
 import {
     Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation,
 } from '@angular/core';
@@ -12,6 +13,7 @@ import { ISubmissionData } from 'src/app/types/submission';
     templateUrl: './submission.component.html',
     styleUrls: ['./submission.component.css'],
     encapsulation: ViewEncapsulation.None,
+    imports: [CommonModule]
 })
 export class SubmissionComponent implements OnInit, FocusableOption {
     @Input() data!: ISubmissionData;

@@ -1,11 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { SettingsService } from 'src/app/services/settings/settings.service';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 @Component({
     selector: 'ss-settings-dialog',
     templateUrl: './settings-dialog.component.html',
-    styleUrls: ['./settings-dialog.component.css']
+    styleUrls: ['./settings-dialog.component.css'],
+    imports: [MatCheckboxModule, MatDialogModule, MatFormFieldModule, MatInputModule, FormsModule, ReactiveFormsModule],
 })
 export class SettingsDialogComponent implements OnInit {
     public settingsForm!: UntypedFormGroup;
