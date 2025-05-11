@@ -61,6 +61,10 @@
                 },
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "subreddit-subscriptions-frontend:build",
+                        "proxyConfig": "src/proxy.conf.json"
+                    },
                     "configurations": {
                         "production": {
                             "buildTarget": "subreddit-subscriptions-frontend:build:production"
