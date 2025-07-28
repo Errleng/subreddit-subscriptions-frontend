@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 
 export interface ISettings {
     shouldFilterSeenSubmissions: boolean;
+    commentIncreaseFilterThreshold: number;
+    scoreIncreaseFilterThreshold: number;
     scrollSubredditUpKey: string;
     scrollSubredditDownKey: string;
     scrollSubmissionUpKey: string;
@@ -32,17 +34,20 @@ export class SettingsService {
 
     private loadSettings(): ISettings {
         const settingsJson = localStorage.getItem(this.settingsListKey);
+        let existingSettings: ISettings | null = null;
         if (settingsJson !== null) {
-            return JSON.parse(settingsJson);
+            existingSettings = JSON.parse(settingsJson);
         }
         return {
-            shouldFilterSeenSubmissions: false,
-            openSubmissionKey: '',
-            scrollSubmissionDownKey: '',
-            scrollSubmissionUpKey: '',
-            scrollSubredditDownKey: '',
-            scrollSubredditUpKey: '',
-            subredditSettings: [
+            shouldFilterSeenSubmissions: existingSettings?.shouldFilterSeenSubmissions || false,
+            scoreIncreaseFilterThreshold: existingSettings?.scoreIncreaseFilterThreshold || 1.25,
+            commentIncreaseFilterThreshold: existingSettings?.commentIncreaseFilterThreshold || 1.25,
+            openSubmissionKey: existingSettings?.openSubmissionKey || '',
+            scrollSubmissionDownKey: existingSettings?.scrollSubmissionDownKey || '',
+            scrollSubmissionUpKey: existingSettings?.scrollSubmissionUpKey || '',
+            scrollSubredditDownKey: existingSettings?.scrollSubredditDownKey || '',
+            scrollSubredditUpKey: existingSettings?.scrollSubredditUpKey || '',
+            subredditSettings: existingSettings?.subredditSettings || [
                 { name: 'aww', sortTime: 'day', limit: 10 },
                 { name: 'food', sortTime: 'day', limit: 10 },
                 { name: 'books', sortTime: 'day', limit: 10 },

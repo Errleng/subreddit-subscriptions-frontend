@@ -56,8 +56,8 @@ export class SubmissionComponent implements OnInit, FocusableOption {
             const oldSubmission = cachedSubmission.submission;
             this.numNewComments = submission.num_comments - oldSubmission.num_comments;
             this.newScoreIncrease = submission.score - oldSubmission.score;
-            const newCommentsIsInteresting = submission.num_comments > oldSubmission.num_comments * 1.25;
-            const newScoreIsInteresting = submission.score > oldSubmission.score * 1.25;
+            const newCommentsIsInteresting = this.numNewComments / oldSubmission.num_comments > settings.commentIncreaseFilterThreshold / 100;
+            const newScoreIsInteresting = this.newScoreIncrease / oldSubmission.score > settings.scoreIncreaseFilterThreshold / 100;
             if (settings.shouldFilterSeenSubmissions && this.data.cachedSubmission?.isSeen) {
                 if (!newCommentsIsInteresting && !newScoreIsInteresting) {
                     this.isVisible = false;
