@@ -58,8 +58,12 @@ export class SubmissionComponent implements OnInit, FocusableOption {
             this.newScoreIncrease = submission.score - oldSubmission.score;
             const newCommentsIsInteresting = submission.num_comments > oldSubmission.num_comments * 1.25;
             const newScoreIsInteresting = submission.score > oldSubmission.score * 1.25;
-            if (settings.shouldFilterSeenSubmissions && this.data.cachedSubmission?.isSeen && !newCommentsIsInteresting && !newScoreIsInteresting) {
-                this.isVisible = false;
+            if (settings.shouldFilterSeenSubmissions && this.data.cachedSubmission?.isSeen) {
+                if (!newCommentsIsInteresting && !newScoreIsInteresting) {
+                    this.isVisible = false;
+                } else {
+                    console.debug('submission seen but visible:', 'comments increase:', this.numNewComments, 'score increase:', this.newScoreIncrease, 'comments interesting:', newCommentsIsInteresting, 'score interesting:', newScoreIsInteresting, 'title:', submission.title);
+                }
             }
         }
 
