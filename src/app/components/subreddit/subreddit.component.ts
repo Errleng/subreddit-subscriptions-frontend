@@ -3,7 +3,6 @@ import {
     AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { delay, retryWhen, take, tap } from 'rxjs/operators';
 import { CacheService } from 'src/app/services/cache/cache.service';
 import { RedditService } from 'src/app/services/reddit/reddit.service';
 import { ISubredditSetting, SettingsService } from 'src/app/services/settings/settings.service';
@@ -21,7 +20,7 @@ import { CommonModule } from '@angular/common';
 export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, FocusableOption {
     private keyEventManager!: FocusKeyManager<SubmissionComponent>;
 
-    private sub!: Subscription;
+    private sub?: Subscription;
 
     @Input() setting: ISubredditSetting = { name: '', sortTime: 'day', limit: 10 };
     @Output() focusEvent = new EventEmitter();
@@ -55,11 +54,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     }
 
     ngOnDestroy(): void {
-        this.sub.unsubscribe();
-    }
-
-    randomIntBetween(min: number, max: number) {
-        return Math.floor(Math.random() * (max - min + 1) + min);
+        this.sub?.unsubscribe();
     }
 
     focus(origin?: FocusOrigin): void {
@@ -105,15 +100,8 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     }
 
     loadData(): void {
-        const randomDelay = this.randomIntBetween(5000, 60000);
+        this.sub?.unsubscribe();
         this.sub = this.redditService.getSubmissions(this.setting.name, this.setting.sortTime, this.setting.limit)
-            .pipe(
-                retryWhen((errors) => errors.pipe(
-                    tap((err: Error) => console.error(`Error getting data for r/${this.setting.name} submission:`, err, `retrying in ${randomDelay}ms`)),
-                    delay(randomDelay),
-                    take(4)
-                )),
-            )
             .subscribe({
                 next: (data: object) => {
                     const castData: ISubmission[] = Object.values(data);
@@ -166,6 +154,9 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
                     }
 
                     this.cacheService.saveCache(false);
+                },
+                error: (error: unknown) => {
+                    console.error(`Failed to load data for r/${this.setting.name}:`, error);
                 },
             });
     }
