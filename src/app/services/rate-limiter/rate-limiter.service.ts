@@ -10,6 +10,7 @@ interface QueuedRequest {
     subscriber: Subscriber<HttpEvent<unknown>>;
     subscription?: Subscription;
     retryTimer?: ReturnType<typeof setTimeout>;
+    rateLimitBackoffMs: number;
     transientRetries: number;
     cancelled: boolean;
     finished: boolean;
@@ -18,6 +19,8 @@ interface QueuedRequest {
 const MAX_TRANSIENT_RETRIES = 2;
 const REQUEST_TIMEOUT_MS = 50000;
 const TRANSIENT_RETRY_DELAYS_MS = [1000, 3000];
+const INITIAL_RATE_LIMIT_BACKOFF_MS = 1000;
+const MAX_RATE_LIMIT_BACKOFF_MS = 300000;
 const DEFAULT_RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
 const DEFAULT_OVERLOAD_RETRY_AFTER_SECONDS = 5;
 
@@ -38,6 +41,7 @@ export class RateLimiterService implements HttpInterceptor {
                 request,
                 next,
                 subscriber,
+                rateLimitBackoffMs: INITIAL_RATE_LIMIT_BACKOFF_MS,
                 transientRetries: 0,
                 cancelled: false,
                 finished: false,
@@ -115,7 +119,34 @@ export class RateLimiterService implements HttpInterceptor {
     }
 
     private retryAfter(queuedRequest: QueuedRequest, retryAfterSeconds: number): void {
-        this.scheduleRetry(queuedRequest, retryAfterSeconds * 1000);
+        const backoffMs = queuedRequest.rateLimitBackoffMs;
+        queuedRequest.rateLimitBackoffMs = Math.min(backoffMs * 2, MAX_RATE_LIMIT_BACKOFF_MS);
+        const retryAfterMs = retryAfterSeconds * 1000;
+        this.scheduleRateLimitRetry(queuedRequest, Math.max(retryAfterMs, backoffMs));
+    }
+
+    private scheduleRateLimitRetry(queuedRequest: QueuedRequest, delayMs: number): void {
+        queuedRequest.subscription?.unsubscribe();
+
+        const index = this.queue.indexOf(queuedRequest);
+        if (index !== -1) {
+            this.queue.splice(index, 1);
+        }
+        this.processing = false;
+
+        queuedRequest.retryTimer = setTimeout(() => {
+            queuedRequest.retryTimer = undefined;
+            if (queuedRequest.cancelled || queuedRequest.finished) {
+                return;
+            }
+
+            // Rejoin at the tail after the server-directed wait/backoff so a
+            // persistently rate-limited subreddit cannot block other feeds.
+            this.queue.push(queuedRequest);
+            this.processNext();
+        }, Math.max(0, delayMs));
+
+        this.processNext();
     }
 
     private retryTransiently(queuedRequest: QueuedRequest, error: unknown, delayMs: number): void {

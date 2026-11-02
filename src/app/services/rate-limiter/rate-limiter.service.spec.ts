@@ -33,30 +33,41 @@ describe('RateLimiterService', () => {
         expect(handler.handle.calls.argsFor(1)[0].url).toContain('/second/');
     });
 
-    it('waits for Retry-After and retries the blocked feed before later feeds', fakeAsync(() => {
+    it('requeues 429 feeds with exponential backoff while later feeds proceed', fakeAsync(() => {
         const handler = jasmine.createSpyObj<HttpHandler>('HttpHandler', ['handle']);
         handler.handle.and.returnValues(
             throwError(() => new HttpErrorResponse({
                 status: 429,
-                headers: new HttpHeaders({ 'Retry-After': '2' }),
+                headers: new HttpHeaders({ 'Retry-After': '1' }),
+            })),
+            of(new HttpResponse({ body: { second: true } })),
+            of(new HttpResponse({ body: { third: true } })),
+            throwError(() => new HttpErrorResponse({
+                status: 429,
+                headers: new HttpHeaders({ 'Retry-After': '1' }),
             })),
             of(new HttpResponse({ body: { first: true } })),
-            of(new HttpResponse({ body: { second: true } })),
         );
         const firstRequest = new HttpRequest('GET', '/api/subreddit/first/top/day/10');
         const secondRequest = new HttpRequest('GET', '/api/subreddit/second/top/day/10');
+        const thirdRequest = new HttpRequest('GET', '/api/subreddit/third/top/day/10');
         const firstNext = jasmine.createSpy('firstNext');
 
         service.intercept(firstRequest, handler).subscribe({ next: firstNext });
         service.intercept(secondRequest, handler).subscribe();
-        expect(handler.handle).toHaveBeenCalledTimes(1);
-
-        tick(1999);
-        expect(handler.handle).toHaveBeenCalledTimes(1);
-        tick(1);
+        service.intercept(thirdRequest, handler).subscribe();
         expect(handler.handle).toHaveBeenCalledTimes(3);
-        expect(handler.handle.calls.argsFor(1)[0].url).toContain('/first/');
-        expect(handler.handle.calls.argsFor(2)[0].url).toContain('/second/');
+        expect(handler.handle.calls.argsFor(1)[0].url).toContain('/second/');
+        expect(handler.handle.calls.argsFor(2)[0].url).toContain('/third/');
+
+        tick(1000);
+        expect(handler.handle).toHaveBeenCalledTimes(4);
+        expect(handler.handle.calls.argsFor(3)[0].url).toContain('/first/');
+        tick(1999);
+        expect(handler.handle).toHaveBeenCalledTimes(4);
+        tick(1);
+        expect(handler.handle).toHaveBeenCalledTimes(5);
+        expect(handler.handle.calls.argsFor(4)[0].url).toContain('/first/');
         expect(firstNext).toHaveBeenCalled();
     }));
 
