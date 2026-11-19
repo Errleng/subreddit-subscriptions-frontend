@@ -1,6 +1,7 @@
 import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import {
+    ChangeDetectionStrategy,
     Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -12,6 +13,7 @@ import { faImage } from '@fortawesome/free-regular-svg-icons';
 
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'ss-submission',
     templateUrl: './submission.component.html',
     styleUrls: ['./submission.component.css'],

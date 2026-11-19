@@ -1,34 +1,20 @@
-<div
-  (keydown)="onKeyDown($event)"
-  class="d-flex flex-column align-items-center"
->
-  <h3 #subredditTitle tabindex="-1" class="display-1 border-bottom mt-3 mb-3">
-    r/{{ setting.name }}
-  </h3>
-  <div class="d-flex flex-row">
-    <button (click)="saveSettingsAndLoad()" class="btn btn-secondary">
-      Reload
-    </button>
-    <select [(ngModel)]="sortTime" class="form-select w-auto">
-      <option value="hour">Hour</option>
-      <option value="day">Day</option>
-      <option value="week">Week</option>
-      <option value="month">Month</option>
-      <option value="year">Year</option>
-      <option value="all">All time</option>
-    </select>
-    <input
-      id="limitField"
-      [(ngModel)]="setting.limit"
-      type="number"
-      class="form-control"
-    />
-  </div>
-  <div>
-    <ss-submission
-      *ngFor="let submissionData of submissionDatas; index as i"
-      [data]="submissionData"
-      (focusEvent)="onSubmissionFocus(i)"
-    ></ss-submission>
-  </div>
+<div (keydown)="onKeyDown($event)" class="d-flex flex-column align-items-center">
+    <h3 #subredditTitle tabindex="-1" class="display-1 border-bottom mt-3 mb-3">r/{{ setting.name }}</h3>
+    <div class="d-flex flex-row">
+        <button (click)="saveSettingsAndLoad()" class="btn btn-secondary">Reload</button>
+        <select [(ngModel)]="sortTime" class="form-select w-auto">
+            <option value="hour">Hour</option>
+            <option value="day">Day</option>
+            <option value="week">Week</option>
+            <option value="month">Month</option>
+            <option value="year">Year</option>
+            <option value="all">All time</option>
+        </select>
+        <input id="limitField" [(ngModel)]="setting.limit" type="number" class="form-control" />
+    </div>
+    <div>
+        @for (submissionData of submissionDatas; track submissionData; let i = $index) {
+            <ss-submission [data]="submissionData" (focusEvent)="onSubmissionFocus(i)"></ss-submission>
+        }
+    </div>
 </div>

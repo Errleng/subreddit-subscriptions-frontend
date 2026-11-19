@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'ss-about-dialog',
     templateUrl: './about-dialog.component.html',
     styleUrls: ['./about-dialog.component.css'],

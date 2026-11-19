@@ -1,5 +1,6 @@
 import { FocusableOption, FocusKeyManager, FocusOrigin } from '@angular/cdk/a11y';
 import {
+    ChangeDetectionStrategy,
     AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { Subscription } from 'rxjs';
@@ -9,13 +10,13 @@ import { ISubredditSetting, SettingsService } from 'src/app/services/settings/se
 import { ISubmission, ISubmissionData } from 'src/app/types/submission';
 import { SubmissionComponent } from '../submission/submission.component';
 import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'ss-subreddit',
     templateUrl: './subreddit.component.html',
     styleUrls: ['./subreddit.component.css'],
-    imports: [CommonModule, FormsModule, SubmissionComponent],
+    imports: [FormsModule, SubmissionComponent],
 })
 export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, FocusableOption {
     private keyEventManager!: FocusKeyManager<SubmissionComponent>;

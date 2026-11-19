@@ -2,6 +2,7 @@ import { FocusKeyManager } from '@angular/cdk/a11y';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
+    ChangeDetectionStrategy,
     AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -12,13 +13,13 @@ import { Subscription } from 'rxjs';
 import { RedditService } from 'src/app/services/reddit/reddit.service';
 import { SettingsService } from 'src/app/services/settings/settings.service';
 import { SubredditComponent } from '../subreddit/subreddit.component';
-import { CommonModule } from '@angular/common';
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'ss-subreddit-list',
     templateUrl: './subreddit-list.component.html',
     styleUrls: ['./subreddit-list.component.css'],
-    imports: [FontAwesomeModule, SubredditComponent, MatExpansionModule, FormsModule, DragDropModule, CommonModule],
+    imports: [FontAwesomeModule, SubredditComponent, MatExpansionModule, FormsModule, DragDropModule],
 })
 export class SubredditListComponent implements OnInit, AfterViewInit {
     private keyEventManager!: FocusKeyManager<SubredditComponent>;
