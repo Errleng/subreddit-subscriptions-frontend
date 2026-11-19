@@ -30,6 +30,16 @@ Both TypeScript projects inherit strict mode, `exactOptionalPropertyTypes`, `noU
 
 The TypeScript projects use `skipLibCheck` for dependency declaration files.
 
+### Pre-commit hook
+
+Run `git rev-parse --git-path hooks` to find the effective hooks directory and check for existing hooks or a hook manager. If the clone already runs hooks, integrate `npm run check` with that setup. In a clone with only Git's sample hooks, activate the tracked hook once by running:
+
+```sh
+git config --local core.hooksPath .githooks
+```
+
+Use the Node version in `.nvmrc` when committing. The hook runs `npm run check` against the working tree, so keep unrelated unstaged edits out of the checkout while committing.
+
 ### Setup baseline
 
 At `6a90b61`, a clean lockfile install, the production build, and both TypeScript checks passed on Node 22.23.4 and npm 10.9.9. The build warned about the initial bundle budget and four Bootstrap CSS selectors.
@@ -46,7 +56,7 @@ At `7325ebc`, type-aware lint reported 34 findings. The lint check now passes fo
 
 At `e1843d0`, Oxfmt reported formatting differences in 35 files. The formatter check now passes. Oxfmt's Tinypool version is pinned to a patched release.
 
-The pre-commit hook and build-and-test workflow are pending.
+The build-and-test workflow is pending.
 
 The secret-scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. The hosted workflow and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
 

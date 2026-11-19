@@ -3,6 +3,7 @@
 ## Frontend checks
 
 - Use the Node version in `.nvmrc` and install from the npm lockfile with `npm ci`.
+- Use `npm run check` for the full local check. The tracked pre-commit hook runs it when enabled as documented in the README.
 - Keep Angular's application and spec TypeScript projects as the inputs to `npm run typecheck`. The production build also checks Angular templates.
 - Use `npm test` for the Vitest suite and `npm run test:coverage` for its V8 coverage report. See the README for the rollout baseline.
 
