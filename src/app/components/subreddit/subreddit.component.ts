@@ -42,7 +42,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     submissionDatas: ISubmissionData[] = [];
 
-    disabled?: boolean | undefined;
+    disabled?: boolean;
 
     get sortTime(): string {
         return this.setting.sortTime;

@@ -9,6 +9,7 @@
         "outDir": "./dist/out-tsc",
         "noEmitOnError": true,
         "strict": true,
+        "exactOptionalPropertyTypes": true,
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,
         "noImplicitReturns": true,

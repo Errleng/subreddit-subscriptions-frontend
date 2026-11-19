@@ -7,7 +7,7 @@ interface QueuedRequest {
     next: HttpHandler;
     subscriber: Subscriber<HttpEvent<unknown>>;
     subscription?: Subscription;
-    retryTimer?: ReturnType<typeof setTimeout>;
+    retryTimer: ReturnType<typeof setTimeout> | undefined;
     rateLimitBackoffMs: number;
     transientRetries: number;
     cancelled: boolean;
@@ -39,6 +39,7 @@ export class RateLimiterService implements HttpInterceptor {
                 request,
                 next,
                 subscriber,
+                retryTimer: undefined,
                 rateLimitBackoffMs: INITIAL_RATE_LIMIT_BACKOFF_MS,
                 transientRetries: 0,
                 cancelled: false,
