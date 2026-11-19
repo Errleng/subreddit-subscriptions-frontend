@@ -56,9 +56,9 @@ At `7325ebc`, type-aware lint reported 34 findings. The lint check now passes fo
 
 At `e1843d0`, Oxfmt reported formatting differences in 35 files. The formatter check now passes. Oxfmt's Tinypool version is pinned to a patched release.
 
-The build-and-test workflow is pending.
+The Build and Test workflow installs dependencies from the lockfile using the Node version in `.nvmrc` and runs `npm run check`.
 
-The secret-scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. The hosted workflow and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
+The Secret Scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. Hosted workflow runs and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
 
 ## Development server
 
