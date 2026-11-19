@@ -20,10 +20,9 @@ describe('MainMenuComponent dialogs', () => {
         return dialog;
     }
 
-    async function editShortcut(dialog: Element, value: string): Promise<void> {
-        const shortcut = getElement(dialog, 'input', 'input[formcontrolname="scrollSubmissionDownKey"]');
-        shortcut.value = value;
-        shortcut.dispatchEvent(new Event('input'));
+    async function editInput(input: HTMLInputElement, value: string): Promise<void> {
+        input.value = value;
+        input.dispatchEvent(new Event('input'));
         await fixture.whenStable();
     }
 
@@ -61,7 +60,7 @@ describe('MainMenuComponent dialogs', () => {
         expect(document.querySelector('mat-dialog-container')).toBeNull();
     });
 
-    it('loads the saved settings, blocks an invalid shortcut, and saves valid changes', async () => {
+    it('rejects invalid edits and saves valid shortcuts and numeric thresholds', async () => {
         localStorage.setItem(
             'settings',
             JSON.stringify({
@@ -73,16 +72,23 @@ describe('MainMenuComponent dialogs', () => {
 
         const dialog = await openDialog('Settings');
         expect(getElement(dialog, 'h1').textContent?.trim()).toBe('Settings');
-        expect(getElement(dialog, 'input', 'input[formcontrolname="scoreIncreaseFilterThreshold"]').value).toBe('15');
-        expect(getElement(dialog, 'input', 'input[formcontrolname="commentIncreaseFilterThreshold"]').value).toBe('25');
-        expect(getElement(dialog, 'input', 'input[formcontrolname="scrollSubmissionDownKey"]').value).toBe('j');
+        const score = getElement(dialog, 'input', 'input[formcontrolname="scoreIncreaseFilterThreshold"]');
+        const comments = getElement(dialog, 'input', 'input[formcontrolname="commentIncreaseFilterThreshold"]');
+        const shortcut = getElement(dialog, 'input', 'input[formcontrolname="scrollSubmissionDownKey"]');
+        expect(score.value).toBe('15');
+        expect(comments.value).toBe('25');
+        expect(shortcut.value).toBe('j');
         const save = getElement(dialog, 'button', 'button[type="submit"]');
         const filter = getElement(dialog, 'input', 'input[type="checkbox"]');
         expect(filter.checked).toBe(false);
 
-        await editShortcut(dialog, 'jj');
+        await editInput(shortcut, 'jj');
         expect(save.disabled).toBe(true);
-        await editShortcut(dialog, 'n');
+        await editInput(shortcut, 'n');
+        await editInput(score, '1x');
+        expect(save.disabled).toBe(true);
+        await editInput(score, '2.5');
+        await editInput(comments, '0');
         expect(save.disabled).toBe(false);
 
         filter.click();
@@ -90,11 +96,12 @@ describe('MainMenuComponent dialogs', () => {
         await fixture.whenStable();
 
         expect(document.querySelector('mat-dialog-container')).toBeNull();
-        expect(new SettingsService().getSettings()).toMatchObject({
+        const saved: unknown = JSON.parse(localStorage.getItem('settings') ?? 'null');
+        expect(saved).toMatchObject({
             shouldFilterSeenSubmissions: true,
             scrollSubmissionDownKey: 'n',
-            scoreIncreaseFilterThreshold: 15,
-            commentIncreaseFilterThreshold: 25,
+            scoreIncreaseFilterThreshold: 2.5,
+            commentIncreaseFilterThreshold: 0,
         });
     });
 
@@ -103,7 +110,8 @@ describe('MainMenuComponent dialogs', () => {
         settings.getSettings().scrollSubmissionDownKey = 'j';
         settings.saveSettings();
         const dialog = await openDialog('Settings');
-        await editShortcut(dialog, 'n');
+        const shortcut = getElement(dialog, 'input', 'input[formcontrolname="scrollSubmissionDownKey"]');
+        await editInput(shortcut, 'n');
 
         getElement(dialog, 'button', 'button[type="button"]').click();
         await fixture.whenStable();

@@ -32,7 +32,7 @@ function isSubredditSetting(value: unknown): value is ISubredditSetting {
     );
 }
 
-function readFilterThreshold(value: unknown): number | undefined {
+export function readFilterThreshold(value: unknown): number | undefined {
     if (value === undefined) return DEFAULT_FILTER_THRESHOLD;
     // The settings form has saved edited thresholds as text.
     if (typeof value === 'string') {
