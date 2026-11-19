@@ -24,6 +24,7 @@ Angular's unit-test builder runs Vitest with jsdom. Colocate `*.spec.ts` files w
 | `npm run lint`          | Run type-aware Oxlint on the source, specs, and Vitest config.                                            |
 | `npm run lint:fix`      | Apply Oxlint's automatic fixes to the same files.                                                         |
 | `npm run format:check`  | Check formatting without writing files. Use `npm run format` to apply it.                                 |
+| `npm run check`         | Run the production build, type checks, lint, formatting, and tests with coverage.                         |
 
 Both TypeScript projects inherit strict mode, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, and `noUnusedParameters` from `tsconfig.json`. The typecheck command uses `--noEmit` with both projects. The production build also checks Angular templates.
 
@@ -45,7 +46,7 @@ At `7325ebc`, type-aware lint reported 34 findings. The lint check now passes fo
 
 At `e1843d0`, Oxfmt reported formatting differences in 35 files. The formatter check now passes. Oxfmt's Tinypool version is pinned to a patched release.
 
-The aggregate check, pre-commit hook, and build-and-test workflow are pending.
+The pre-commit hook and build-and-test workflow are pending.
 
 The secret-scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. The hosted workflow and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
 
