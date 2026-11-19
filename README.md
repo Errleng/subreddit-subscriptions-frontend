@@ -2,12 +2,45 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
 
+## Setup
+
+From the repository root, install the Node version pinned in `.nvmrc` and use npm with the checked-in lockfile.
+
+```sh
+nvm install
+npm ci
+```
+
+The test suite uses Karma and Jasmine. Colocate `*.spec.ts` files with the Angular components and services they exercise. Chrome or Chromium is needed for browser tests. Set `CHROME_BIN` if the Karma launcher cannot find your browser.
+
+| Command | Purpose |
+| --- | --- |
+| `npm start` | Start the local Angular development server. |
+| `npm run build` | Build the production browser bundle. |
+| `npm run typecheck` | Check the application and specs using their Angular TypeScript projects. |
+| `npm test` | Run the browser tests in watch mode. |
+| `npm test -- --watch=false --browsers=ChromeHeadless --code-coverage` | Run the current suite once and report coverage. |
+| `npm run lint` | Run type-aware Oxlint on the source and specs. |
+| `npm run format:check` | Check formatting without writing files. Use `npm run format` to apply it. |
+
+The TypeScript projects use `skipLibCheck` to skip checking dependency declaration files. Application and test files are still type-checked.
+
+### Setup baseline
+
+At `6a90b61`, a clean lockfile install, the production build, and both TypeScript checks passed on Node 22.23.4 and npm 10.9.9. The build warned about the initial bundle budget and four Bootstrap CSS selectors.
+
+Karma discovered 18 tests. Eight passed, nine failed because standalone components were declared in TestBed, and one failed because the test lacked an HTTP provider. The run reported 34.23% statements, 44.16% branches, 30.12% functions, and 34.16% lines.
+
+The new lint rules expose existing unsafe values and a floating promise. The formatter check reports existing style differences. The aggregate check, coverage thresholds, pre-commit hook, and build-and-test workflow are pending the test runner decision and a passing suite. The Oxfmt dependency override keeps its Tinypool release patched while the frontend uses Angular 19.
+
+The secret-scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. The hosted workflow and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
+
 ## Development server
 
 To start a local development server, run:
 
 ```bash
-ng serve
+npm start
 ```
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
@@ -31,7 +64,7 @@ ng generate --help
 To build the project run:
 
 ```bash
-ng build
+npm run build
 ```
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
@@ -41,7 +74,7 @@ This will compile your project and store the build artifacts in the `dist/` dire
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
 
 ```bash
-ng test
+npm test
 ```
 
 ## Running end-to-end tests

@@ -3,8 +3,11 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
-        "baseUrl": "./",
+        "rootDir": "./src",
+        "paths": { "src/*": ["./src/*"] },
+        "types": ["jasmine"],
         "outDir": "./dist/out-tsc",
+        "noEmitOnError": true,
         "strict": true,
         "noImplicitOverride": true,
         "noPropertyAccessFromIndexSignature": true,

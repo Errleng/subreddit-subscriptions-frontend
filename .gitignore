@@ -11,6 +11,11 @@
 npm-debug.log
 yarn-error.log
 
+# Local credentials and settings
+.env
+.env.*
+!.env.example
+
 # IDEs and editors
 .idea/
 .project

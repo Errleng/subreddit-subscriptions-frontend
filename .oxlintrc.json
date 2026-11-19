@@ -1,0 +1,28 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "options": {
+        "typeAware": true,
+        "denyWarnings": true,
+        "reportUnusedDisableDirectives": "error"
+    },
+    "plugins": ["typescript", "oxc", "unicorn"],
+    "categories": { "correctness": "error" },
+    "env": { "browser": true, "es2021": true },
+    "overrides": [
+        {
+            "files": ["**/*.spec.ts"],
+            "env": { "jasmine": true }
+        }
+    ],
+    "rules": {
+        "typescript/no-floating-promises": ["error", { "ignoreVoid": false }],
+        "typescript/no-misused-promises": "error",
+        "typescript/await-thenable": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
+        "typescript/switch-exhaustiveness-check": "error"
+    }
+}
