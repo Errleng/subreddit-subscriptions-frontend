@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { vi } from 'vitest';
+import { assert, vi } from 'vitest';
 
 import { environment } from '../../../environments/environment';
 import { getElement, getHostElement } from '../../../testing/dom';
@@ -187,8 +187,8 @@ describe('SubredditComponent', () => {
         fixture.detectChanges();
 
         const cards = Array.from(host.querySelectorAll<HTMLDivElement>('.card'));
-        expect(cards).toHaveLength(2);
         const [first, last] = cards;
+        assert(cards.length === 2 && first && last, 'Expected exactly two visible submission cards');
         for (const card of cards) Object.defineProperty(card, 'scrollIntoView', { value: vi.fn() });
         const open = vi.spyOn(window, 'open').mockReturnValue(null);
         fixture.componentInstance.focus();

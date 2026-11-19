@@ -39,7 +39,7 @@ describe('RateLimiterService', () => {
         firstResponse.next(new HttpResponse({ body: {} }));
         firstResponse.complete();
         expect(handler.handle).toHaveBeenCalledTimes(2);
-        expect(handler.handle.mock.calls[1][0].url).toContain('/second/');
+        expect(handler.handle).toHaveBeenNthCalledWith(2, secondRequest);
     });
 
     it('requeues 429 feeds with exponential backoff while later feeds proceed', () => {
@@ -76,17 +76,17 @@ describe('RateLimiterService', () => {
         service.intercept(secondRequest, handler).subscribe();
         service.intercept(thirdRequest, handler).subscribe();
         expect(handler.handle).toHaveBeenCalledTimes(3);
-        expect(handler.handle.mock.calls[1][0].url).toContain('/second/');
-        expect(handler.handle.mock.calls[2][0].url).toContain('/third/');
+        expect(handler.handle).toHaveBeenNthCalledWith(2, secondRequest);
+        expect(handler.handle).toHaveBeenNthCalledWith(3, thirdRequest);
 
         vi.advanceTimersByTime(1000);
         expect(handler.handle).toHaveBeenCalledTimes(4);
-        expect(handler.handle.mock.calls[3][0].url).toContain('/first/');
+        expect(handler.handle).toHaveBeenNthCalledWith(4, firstRequest);
         vi.advanceTimersByTime(1999);
         expect(handler.handle).toHaveBeenCalledTimes(4);
         vi.advanceTimersByTime(1);
         expect(handler.handle).toHaveBeenCalledTimes(5);
-        expect(handler.handle.mock.calls[4][0].url).toContain('/first/');
+        expect(handler.handle).toHaveBeenNthCalledWith(5, firstRequest);
         expect(firstNext).toHaveBeenCalled();
     });
 

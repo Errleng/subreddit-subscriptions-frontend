@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { vi } from 'vitest';
+import { assert, vi } from 'vitest';
 
 import { environment } from '../../../environments/environment';
 import { getElement, getHostElement } from '../../../testing/dom';
@@ -207,8 +207,8 @@ describe('SubredditListComponent', () => {
         expectFeed('fixture-second').flush([makeSubmission({ id: 'fixture-second-post' })]);
         fixture.detectChanges();
         const cards = Array.from(host.querySelectorAll<HTMLDivElement>('.card'));
-        expect(cards).toHaveLength(2);
         const [first, second] = cards;
+        assert(cards.length === 2 && first && second, 'Expected exactly two submission cards');
         for (const card of cards) Object.defineProperty(card, 'scrollIntoView', { value: vi.fn() });
 
         first.focus();

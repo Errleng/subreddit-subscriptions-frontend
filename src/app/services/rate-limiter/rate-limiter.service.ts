@@ -14,7 +14,6 @@ interface QueuedRequest {
     finished: boolean;
 }
 
-const MAX_TRANSIENT_RETRIES = 2;
 const REQUEST_TIMEOUT_MS = 50000;
 const TRANSIENT_RETRY_DELAYS_MS = [1000, 3000];
 const INITIAL_RATE_LIMIT_BACKOFF_MS = 1000;
@@ -58,15 +57,17 @@ export class RateLimiterService implements HttpInterceptor {
             return;
         }
 
-        while (this.queue.length > 0 && this.queue[0].cancelled) {
+        let next = this.queue[0];
+        while (next?.cancelled) {
             this.queue.shift();
+            next = this.queue[0];
         }
-        if (this.queue.length === 0) {
+        if (next === undefined) {
             return;
         }
 
         this.processing = true;
-        this.sendAttempt(this.queue[0]);
+        this.sendAttempt(next);
     }
 
     private sendAttempt(queuedRequest: QueuedRequest): void {
@@ -107,8 +108,8 @@ export class RateLimiterService implements HttpInterceptor {
             return;
         }
 
-        if (this.isTransient(error) && queuedRequest.transientRetries < MAX_TRANSIENT_RETRIES) {
-            const delayMs = TRANSIENT_RETRY_DELAYS_MS[queuedRequest.transientRetries];
+        const delayMs = TRANSIENT_RETRY_DELAYS_MS[queuedRequest.transientRetries];
+        if (this.isTransient(error) && delayMs !== undefined) {
             this.retryTransiently(queuedRequest, error, delayMs);
             return;
         }
@@ -151,7 +152,7 @@ export class RateLimiterService implements HttpInterceptor {
     }
 
     private retryTransiently(queuedRequest: QueuedRequest, error: unknown, delayMs: number): void {
-        if (queuedRequest.transientRetries >= MAX_TRANSIENT_RETRIES) {
+        if (queuedRequest.transientRetries >= TRANSIENT_RETRY_DELAYS_MS.length) {
             this.finish(queuedRequest, error);
             return;
         }
