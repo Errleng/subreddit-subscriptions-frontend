@@ -41,6 +41,10 @@ function readFilterThreshold(value: unknown): number | undefined {
     return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
 }
 
+function readSavedShortcut(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+}
+
 function parseSettingsFile(content: string): ISettings {
     const data: unknown = JSON.parse(content);
     if (!isRecord(data)) throw new Error('Expected a settings object');
@@ -102,26 +106,35 @@ export class SettingsService {
 
     private loadSettings(): ISettings {
         const settingsJson = localStorage.getItem(this.settingsListKey);
-        let existingSettings: ISettings | null = null;
+        let saved: unknown;
         if (settingsJson !== null) {
-            existingSettings = JSON.parse(settingsJson);
+            try {
+                saved = JSON.parse(settingsJson);
+            } catch {
+                console.warn('Could not parse saved settings');
+            }
         }
+
+        const existing = isRecord(saved) ? saved : {};
+        const { subredditSettings } = existing;
         return {
-            shouldFilterSeenSubmissions: existingSettings?.shouldFilterSeenSubmissions || false,
+            shouldFilterSeenSubmissions: existing['shouldFilterSeenSubmissions'] === true,
             scoreIncreaseFilterThreshold:
-                readFilterThreshold(existingSettings?.scoreIncreaseFilterThreshold) ?? DEFAULT_FILTER_THRESHOLD,
+                readFilterThreshold(existing['scoreIncreaseFilterThreshold']) ?? DEFAULT_FILTER_THRESHOLD,
             commentIncreaseFilterThreshold:
-                readFilterThreshold(existingSettings?.commentIncreaseFilterThreshold) ?? DEFAULT_FILTER_THRESHOLD,
-            openSubmissionKey: existingSettings?.openSubmissionKey || '',
-            scrollSubmissionDownKey: existingSettings?.scrollSubmissionDownKey || '',
-            scrollSubmissionUpKey: existingSettings?.scrollSubmissionUpKey || '',
-            scrollSubredditDownKey: existingSettings?.scrollSubredditDownKey || '',
-            scrollSubredditUpKey: existingSettings?.scrollSubredditUpKey || '',
-            subredditSettings: existingSettings?.subredditSettings || [
-                { name: 'aww', sortTime: 'day', limit: 10 },
-                { name: 'food', sortTime: 'day', limit: 10 },
-                { name: 'books', sortTime: 'day', limit: 10 },
-            ],
+                readFilterThreshold(existing['commentIncreaseFilterThreshold']) ?? DEFAULT_FILTER_THRESHOLD,
+            openSubmissionKey: readSavedShortcut(existing['openSubmissionKey']),
+            scrollSubmissionDownKey: readSavedShortcut(existing['scrollSubmissionDownKey']),
+            scrollSubmissionUpKey: readSavedShortcut(existing['scrollSubmissionUpKey']),
+            scrollSubredditDownKey: readSavedShortcut(existing['scrollSubredditDownKey']),
+            scrollSubredditUpKey: readSavedShortcut(existing['scrollSubredditUpKey']),
+            subredditSettings: Array.isArray(subredditSettings)
+                ? subredditSettings.filter(isSubredditSetting)
+                : [
+                      { name: 'aww', sortTime: 'day', limit: 10 },
+                      { name: 'food', sortTime: 'day', limit: 10 },
+                      { name: 'books', sortTime: 'day', limit: 10 },
+                  ],
         };
     }
 

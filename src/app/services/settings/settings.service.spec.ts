@@ -51,6 +51,35 @@ describe('SettingsService', () => {
         expect(new SettingsService().getSettings()).toEqual(importedSettings);
     });
 
+    it('recovers the defaults when saved settings contain invalid JSON', () => {
+        const defaults = new SettingsService().getSettings();
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        localStorage.setItem('settings', '{"subredditSettings":');
+
+        expect(new SettingsService().getSettings()).toEqual(defaults);
+        expect(warn).toHaveBeenCalledOnce();
+    });
+
+    it('restores valid options and subscriptions from a partially invalid settings record', () => {
+        const valid = { name: 'fixture-feed', sortTime: 'day', limit: 10 };
+        localStorage.setItem(
+            'settings',
+            JSON.stringify({
+                openSubmissionKey: 7,
+                scrollSubredditDownKey: 'j',
+                scoreIncreaseFilterThreshold: 'invalid',
+                subredditSettings: [valid, { name: 'fixture-incomplete' }],
+            }),
+        );
+
+        expect(new SettingsService().getSettings()).toMatchObject({
+            openSubmissionKey: '',
+            scrollSubredditDownKey: 'j',
+            scoreIncreaseFilterThreshold: 1.25,
+            subredditSettings: [valid],
+        });
+    });
+
     it('loads and persists a complete settings export', async () => {
         const service = new SettingsService();
         const file = new File([JSON.stringify(importedSettings)], 'fixture-settings.json', {
