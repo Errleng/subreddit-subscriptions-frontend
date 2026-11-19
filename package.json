@@ -10,8 +10,8 @@
     "test:watch": "ng test --watch",
     "test:coverage": "ng test --watch=false --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.spec.json",
-    "lint": "oxlint src",
-    "lint:fix": "oxlint --fix src",
+    "lint": "oxlint src vitest.config.mts",
+    "lint:fix": "oxlint --fix src vitest.config.mts",
     "format": "oxfmt --write .",
     "format:check": "oxfmt --check ."
   },
