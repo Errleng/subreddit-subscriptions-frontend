@@ -1,39 +1,68 @@
-import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
+
+import { environment } from '../environments/environment';
+import { getElement, getHostElement } from '../testing/dom';
+import { makeSubmission } from '../testing/submission.fixture';
 import { AppComponent } from './app.component';
-import { SettingsService } from './services/settings/settings.service';
+import { appConfig } from './app.config';
 
-describe('AppComponent', () => {
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppComponent],
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-        { provide: SettingsService, useValue: { getSettings: () => ({ subredditSettings: [] }) } },
-      ],
-    }).compileComponents();
-  });
+describe('AppComponent startup', () => {
+    let http: HttpTestingController;
 
-  afterEach(() => TestBed.inject(HttpTestingController).verify());
+    beforeEach(() => {
+        localStorage.removeItem('cache');
+        localStorage.setItem(
+            'settings',
+            JSON.stringify({
+                subredditSettings: [
+                    { name: 'fixture-first', sortTime: 'week', limit: 5 },
+                    { name: 'fixture-second', sortTime: 'day', limit: 10 },
+                ],
+            }),
+        );
+        vi.spyOn(console, 'log').mockImplementation(() => {});
+        vi.spyOn(console, 'warn').mockImplementation(() => {});
+        vi.spyOn(console, 'debug').mockImplementation(() => {});
+        TestBed.configureTestingModule({
+            imports: [AppComponent],
+            providers: [...appConfig.providers, provideHttpClientTesting()],
+        });
+        http = TestBed.inject(HttpTestingController);
+    });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
-  });
+    afterEach(() => {
+        try {
+            http.verify();
+        } finally {
+            vi.restoreAllMocks();
+            localStorage.removeItem('cache');
+            localStorage.removeItem('settings');
+        }
+    });
 
-  it(`should have as title 'angular-frontend'`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('angular-frontend');
-  });
+    it('renders the home page and loads saved feeds through the configured request queue', () => {
+        const fixture = TestBed.createComponent(AppComponent);
+        const host = getHostElement(fixture);
+        fixture.detectChanges();
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const host: unknown = fixture.nativeElement;
-    expect(host instanceof HTMLElement && host.querySelector('h1')?.textContent).toEqual('Subreddit Subscriptions');
-  });
+        expect(getElement(host, 'h1').textContent?.trim()).toBe('Subreddit Subscriptions');
+        const firstUrl = `${environment.apiUrl}/api/subreddit/fixture-first/top/week/5`;
+        const secondUrl = `${environment.apiUrl}/api/subreddit/fixture-second/top/day/10`;
+        const first = http.expectOne({ method: 'GET', url: firstUrl });
+        http.expectNone(secondUrl);
+        first.flush([makeSubmission({ id: 'fixture-first-post' })]);
+        http.expectOne({ method: 'GET', url: secondUrl }).flush([makeSubmission({ id: 'fixture-second-post' })]);
+        fixture.detectChanges();
+
+        const feeds = Array.from(host.querySelectorAll('ss-subreddit'), (feed) => ({
+            heading: feed.querySelector('h3')?.textContent?.trim(),
+            link: feed.querySelector('h4 a')?.getAttribute('href'),
+        }));
+        expect(feeds).toEqual([
+            { heading: 'r/fixture-first', link: 'https://redd.it/fixture-first-post' },
+            { heading: 'r/fixture-second', link: 'https://redd.it/fixture-second-post' },
+        ]);
+    });
 });
