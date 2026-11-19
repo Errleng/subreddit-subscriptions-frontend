@@ -9,7 +9,8 @@ import { MatInputModule } from '@angular/material/input';
 const shortcutValidators = [Validators.maxLength(1), Validators.pattern(/[a-zA-Z]/)];
 const thresholdValidators = [
     Validators.maxLength(5),
-    (control: AbstractControl<unknown>) => (readFilterThreshold(control.value) === undefined ? { threshold: true } : null),
+    (control: AbstractControl<unknown>) =>
+        readFilterThreshold(control.value) === undefined ? { threshold: true } : null,
 ];
 
 @Component({
@@ -32,7 +33,7 @@ export class SettingsDialogComponent implements OnInit {
 
     shouldFilterSeenSubmissions: boolean = false;
 
-    constructor(private settingsService: SettingsService) { }
+    constructor(private settingsService: SettingsService) {}
 
     ngOnInit(): void {
         const settings = this.settingsService.getSettings();

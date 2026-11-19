@@ -13,17 +13,17 @@ npm ci
 
 Angular's unit-test builder runs Vitest with jsdom. Colocate `*.spec.ts` files with the Angular components and services they exercise.
 
-| Command | Purpose |
-| --- | --- |
-| `npm start` | Start the local Angular development server. |
-| `npm run build` | Build the production browser bundle. |
-| `npm run typecheck` | Check the application and specs using their Angular TypeScript projects. |
-| `npm test` | Run the unit tests once. |
-| `npm run test:watch` | Re-run unit tests as files change. |
+| Command                 | Purpose                                                                                                   |
+| ----------------------- | --------------------------------------------------------------------------------------------------------- |
+| `npm start`             | Start the local Angular development server.                                                               |
+| `npm run build`         | Build the production browser bundle.                                                                      |
+| `npm run typecheck`     | Check the application and specs using their Angular TypeScript projects.                                  |
+| `npm test`              | Run the unit tests once.                                                                                  |
+| `npm run test:watch`    | Re-run unit tests as files change.                                                                        |
 | `npm run test:coverage` | Run the unit tests, write V8 reports to `coverage/`, and enforce 90% application coverage on each metric. |
-| `npm run lint` | Run type-aware Oxlint on the source, specs, and Vitest config. |
-| `npm run lint:fix` | Apply Oxlint's automatic fixes to the same files. |
-| `npm run format:check` | Check formatting without writing files. Use `npm run format` to apply it. |
+| `npm run lint`          | Run type-aware Oxlint on the source, specs, and Vitest config.                                            |
+| `npm run lint:fix`      | Apply Oxlint's automatic fixes to the same files.                                                         |
+| `npm run format:check`  | Check formatting without writing files. Use `npm run format` to apply it.                                 |
 
 The TypeScript projects use `skipLibCheck` to skip checking dependency declaration files. Application and test files are still type-checked.
 

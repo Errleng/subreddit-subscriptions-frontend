@@ -4,23 +4,21 @@ import { AboutDialogComponent } from '../about-dialog/about-dialog.component';
 import { SettingsDialogComponent } from '../settings-dialog/settings-dialog.component';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.Eager,
-  selector: 'ss-main-menu',
-  templateUrl: './main-menu.component.html',
-  styleUrls: ['./main-menu.component.css']
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'ss-main-menu',
+    templateUrl: './main-menu.component.html',
+    styleUrls: ['./main-menu.component.css'],
 })
 export class MainMenuComponent implements OnInit {
+    constructor(public dialog: MatDialog) {}
 
-  constructor(public dialog: MatDialog) { }
+    ngOnInit(): void {}
 
-  ngOnInit(): void {
-  }
+    openAboutDialog(): void {
+        this.dialog.open(AboutDialogComponent);
+    }
 
-  openAboutDialog(): void {
-    this.dialog.open(AboutDialogComponent);
-  }
-
-  openSettingsDialog(): void {
-    this.dialog.open(SettingsDialogComponent);
-  }
+    openSettingsDialog(): void {
+        this.dialog.open(SettingsDialogComponent);
+    }
 }

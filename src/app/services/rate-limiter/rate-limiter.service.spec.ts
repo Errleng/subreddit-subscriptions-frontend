@@ -1,5 +1,13 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpErrorResponse, HttpEvent, HttpEventType, HttpHandler, HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import {
+    HttpErrorResponse,
+    HttpEvent,
+    HttpEventType,
+    HttpHandler,
+    HttpHeaders,
+    HttpRequest,
+    HttpResponse,
+} from '@angular/common/http';
 import { of, Subject, throwError } from 'rxjs';
 import { vi } from 'vitest';
 
@@ -38,16 +46,26 @@ describe('RateLimiterService', () => {
         vi.useFakeTimers();
         const handler = { handle: vi.fn<HttpHandler['handle']>() };
         handler.handle
-            .mockReturnValueOnce(throwError(() => new HttpErrorResponse({
-                status: 429,
-                headers: new HttpHeaders({ 'Retry-After': '1' }),
-            })))
+            .mockReturnValueOnce(
+                throwError(
+                    () =>
+                        new HttpErrorResponse({
+                            status: 429,
+                            headers: new HttpHeaders({ 'Retry-After': '1' }),
+                        }),
+                ),
+            )
             .mockReturnValueOnce(of(new HttpResponse({ body: { second: true } })))
             .mockReturnValueOnce(of(new HttpResponse({ body: { third: true } })))
-            .mockReturnValueOnce(throwError(() => new HttpErrorResponse({
-                status: 429,
-                headers: new HttpHeaders({ 'Retry-After': '1' }),
-            })))
+            .mockReturnValueOnce(
+                throwError(
+                    () =>
+                        new HttpErrorResponse({
+                            status: 429,
+                            headers: new HttpHeaders({ 'Retry-After': '1' }),
+                        }),
+                ),
+            )
             .mockReturnValueOnce(of(new HttpResponse({ body: { first: true } })));
         const firstRequest = new HttpRequest('GET', '/api/subreddit/first/top/day/10');
         const secondRequest = new HttpRequest('GET', '/api/subreddit/second/top/day/10');

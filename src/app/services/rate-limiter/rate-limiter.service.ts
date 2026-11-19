@@ -1,6 +1,4 @@
-import {
-    HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
-} from '@angular/common/http';
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subscriber, Subscription, TimeoutError, timeout } from 'rxjs';
 
@@ -76,7 +74,8 @@ export class RateLimiterService implements HttpInterceptor {
             return;
         }
 
-        queuedRequest.subscription = queuedRequest.next.handle(queuedRequest.request)
+        queuedRequest.subscription = queuedRequest.next
+            .handle(queuedRequest.request)
             // HttpClient's event stream can emit `Sent` immediately, before the
             // response arrives. Use an inactivity timeout so that event does
             // not disable the timeout for a stalled request.
@@ -94,9 +93,7 @@ export class RateLimiterService implements HttpInterceptor {
         }
 
         const status = error instanceof HttpErrorResponse ? error.status : 0;
-        const retryAfterSeconds = error instanceof HttpErrorResponse
-            ? this.getRetryAfterSeconds(error)
-            : null;
+        const retryAfterSeconds = error instanceof HttpErrorResponse ? this.getRetryAfterSeconds(error) : null;
 
         if (status === 429) {
             this.retryAfter(queuedRequest, retryAfterSeconds ?? DEFAULT_RATE_LIMIT_RETRY_AFTER_SECONDS);
@@ -134,17 +131,20 @@ export class RateLimiterService implements HttpInterceptor {
         }
         this.processing = false;
 
-        queuedRequest.retryTimer = setTimeout(() => {
-            queuedRequest.retryTimer = undefined;
-            if (queuedRequest.cancelled || queuedRequest.finished) {
-                return;
-            }
+        queuedRequest.retryTimer = setTimeout(
+            () => {
+                queuedRequest.retryTimer = undefined;
+                if (queuedRequest.cancelled || queuedRequest.finished) {
+                    return;
+                }
 
-            // Rejoin at the tail after the server-directed wait/backoff so a
-            // persistently rate-limited subreddit cannot block other feeds.
-            this.queue.push(queuedRequest);
-            this.processNext();
-        }, Math.max(0, delayMs));
+                // Rejoin at the tail after the server-directed wait/backoff so a
+                // persistently rate-limited subreddit cannot block other feeds.
+                this.queue.push(queuedRequest);
+                this.processNext();
+            },
+            Math.max(0, delayMs),
+        );
 
         this.processNext();
     }
@@ -161,10 +161,13 @@ export class RateLimiterService implements HttpInterceptor {
 
     private scheduleRetry(queuedRequest: QueuedRequest, delayMs: number): void {
         queuedRequest.subscription?.unsubscribe();
-        queuedRequest.retryTimer = setTimeout(() => {
-            queuedRequest.retryTimer = undefined;
-            this.sendAttempt(queuedRequest);
-        }, Math.max(0, delayMs));
+        queuedRequest.retryTimer = setTimeout(
+            () => {
+                queuedRequest.retryTimer = undefined;
+                this.sendAttempt(queuedRequest);
+            },
+            Math.max(0, delayMs),
+        );
     }
 
     private isTransient(error: unknown): boolean {

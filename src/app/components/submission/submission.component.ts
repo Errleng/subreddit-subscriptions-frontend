@@ -2,7 +2,14 @@ import { FocusableOption } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
-    Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild, ViewEncapsulation,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnInit,
+    Output,
+    ViewChild,
+    ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CacheService } from 'src/app/services/cache/cache.service';
@@ -11,14 +18,13 @@ import { ISubmissionData } from 'src/app/types/submission';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faImage } from '@fortawesome/free-regular-svg-icons';
 
-
 @Component({
     changeDetection: ChangeDetectionStrategy.Eager,
     selector: 'ss-submission',
     templateUrl: './submission.component.html',
     styleUrls: ['./submission.component.css'],
     encapsulation: ViewEncapsulation.None,
-    imports: [CommonModule, FontAwesomeModule]
+    imports: [CommonModule, FontAwesomeModule],
 })
 export class SubmissionComponent implements OnInit, FocusableOption {
     @Input() data!: ISubmissionData;
@@ -37,10 +43,11 @@ export class SubmissionComponent implements OnInit, FocusableOption {
 
     faImage = faImage;
 
-    constructor(private sanitizer: DomSanitizer,
+    constructor(
+        private sanitizer: DomSanitizer,
         private settingsService: SettingsService,
         private cacheService: CacheService,
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         const settings = this.settingsService.getSettings();
@@ -56,13 +63,27 @@ export class SubmissionComponent implements OnInit, FocusableOption {
             const oldSubmission = cachedSubmission.submission;
             this.numNewComments = submission.num_comments - oldSubmission.num_comments;
             this.newScoreIncrease = submission.score - oldSubmission.score;
-            const newCommentsIsInteresting = this.numNewComments / oldSubmission.num_comments > settings.commentIncreaseFilterThreshold / 100;
-            const newScoreIsInteresting = this.newScoreIncrease / oldSubmission.score > settings.scoreIncreaseFilterThreshold / 100;
+            const newCommentsIsInteresting =
+                this.numNewComments / oldSubmission.num_comments > settings.commentIncreaseFilterThreshold / 100;
+            const newScoreIsInteresting =
+                this.newScoreIncrease / oldSubmission.score > settings.scoreIncreaseFilterThreshold / 100;
             if (settings.shouldFilterSeenSubmissions && this.data.cachedSubmission?.isSeen) {
                 if (!newCommentsIsInteresting && !newScoreIsInteresting) {
                     this.isVisible = false;
                 } else {
-                    console.debug('submission seen but visible:', 'comments increase:', this.numNewComments, 'score increase:', this.newScoreIncrease, 'comments interesting:', newCommentsIsInteresting, 'score interesting:', newScoreIsInteresting, 'title:', submission.title);
+                    console.debug(
+                        'submission seen but visible:',
+                        'comments increase:',
+                        this.numNewComments,
+                        'score increase:',
+                        this.newScoreIncrease,
+                        'comments interesting:',
+                        newCommentsIsInteresting,
+                        'score interesting:',
+                        newScoreIsInteresting,
+                        'title:',
+                        submission.title,
+                    );
                 }
             }
         }

@@ -3,12 +3,12 @@ import { MainMenuComponent } from './components/main-menu/main-menu.component';
 import { SubredditListComponent } from './components/subreddit-list/subreddit-list.component';
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.Eager,
-  selector: 'ss-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  imports: [MainMenuComponent, SubredditListComponent],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    selector: 'ss-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css'],
+    imports: [MainMenuComponent, SubredditListComponent],
 })
 export class AppComponent {
-  title = 'angular-frontend';
+    title = 'angular-frontend';
 }

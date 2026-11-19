@@ -3,7 +3,13 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { HttpErrorResponse } from '@angular/common/http';
 import {
     ChangeDetectionStrategy,
-    AfterViewInit, Component, ElementRef, OnInit, QueryList, ViewChild, ViewChildren
+    AfterViewInit,
+    Component,
+    ElementRef,
+    OnInit,
+    QueryList,
+    ViewChild,
+    ViewChildren,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -38,10 +44,12 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
     isImportingSettings = false;
     settingsImportFailed = false;
 
-    constructor(private redditService: RedditService, public settingsService: SettingsService) { }
+    constructor(
+        private redditService: RedditService,
+        public settingsService: SettingsService,
+    ) {}
 
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
 
     ngAfterViewInit(): void {
         this.keyEventManager = new FocusKeyManager(this.subreddits);
@@ -77,7 +85,7 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
                     settings.subredditSettings.push({
                         name: subName,
                         sortTime: 'day',
-                        limit: 10
+                        limit: 10,
                     });
                     this.settingsService.saveSettings();
                 } else {
@@ -90,7 +98,7 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
                 } else {
                     console.error('Subreddit search error:', err);
                 }
-            }
+            },
         });
     }
 

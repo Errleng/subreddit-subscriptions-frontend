@@ -166,10 +166,6 @@ export class SettingsService {
     }
 
     exportSettings(): void {
-        this.download(
-            JSON.stringify(this.getSettings()),
-            this.settingsListFile,
-            'application/json',
-        );
+        this.download(JSON.stringify(this.getSettings()), this.settingsListFile, 'application/json');
     }
 }

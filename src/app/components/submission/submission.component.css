@@ -1,35 +1,35 @@
 a {
-  color: #1c60fe;
+    color: #1c60fe;
 }
 
 a:visited,
 a.seen:visited {
-  color: #8649b8;
+    color: #8649b8;
 }
 
 a.seen {
-  color: dimgrey;
+    color: dimgrey;
 }
 
 a.deleted {
-  color: darkred;
+    color: darkred;
 }
 
 div.card {
-  min-width: 20vw;
-  max-width: 50vw;
+    min-width: 20vw;
+    max-width: 50vw;
 }
 
 div.card:focus {
-  border: 1px solid black;
+    border: 1px solid black;
 }
 
 .submission-media {
-  min-width: 20vw;
-  max-width: 100%;
-  max-height: 80vh;
+    min-width: 20vw;
+    max-width: 100%;
+    max-height: 80vh;
 }
 
 .highlight {
-  color: red;
+    color: red;
 }

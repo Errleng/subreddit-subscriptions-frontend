@@ -1,11 +1,11 @@
 h2:focus {
-  border: 1px solid black;
+    border: 1px solid black;
 }
 
 .d-flex {
-  gap: 10px;
+    gap: 10px;
 }
 
 #limitField {
-  width: 100px;
+    width: 100px;
 }

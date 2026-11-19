@@ -16,17 +16,18 @@ function readSubmissionFeed(body: unknown): ISubmission[] {
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class RedditService {
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient) {}
 
     public checkSubredditValid(name: string): Observable<HttpResponse<unknown>> {
         return this.http.get<unknown>(`${environment.apiUrl}/api/valid/subreddit/${name}`, { observe: 'response' });
     }
 
     public getSubmissions(name: string, sortTime: string, limit: number): Observable<ISubmission[]> {
-        return this.http.get<unknown>(`${environment.apiUrl}/api/subreddit/${name}/top/${sortTime}/${limit}`)
+        return this.http
+            .get<unknown>(`${environment.apiUrl}/api/subreddit/${name}/top/${sortTime}/${limit}`)
             .pipe(map(readSubmissionFeed));
     }
 }

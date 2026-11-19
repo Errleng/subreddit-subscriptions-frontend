@@ -1,7 +1,17 @@
 import { FocusableOption, FocusKeyManager } from '@angular/cdk/a11y';
 import {
     ChangeDetectionStrategy,
-    AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren
+    AfterViewInit,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    QueryList,
+    ViewChild,
+    ViewChildren,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CacheService } from 'src/app/services/cache/cache.service';
@@ -43,7 +53,11 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
         this.saveSettingsAndLoad();
     }
 
-    constructor(private redditService: RedditService, private settingsService: SettingsService, private cacheService: CacheService) { }
+    constructor(
+        private redditService: RedditService,
+        private settingsService: SettingsService,
+        private cacheService: CacheService,
+    ) {}
 
     ngOnInit(): void /*  */ {
         this.loadData();
@@ -103,7 +117,8 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
 
     loadData(): void {
         this.sub?.unsubscribe();
-        this.sub = this.redditService.getSubmissions(this.setting.name, this.setting.sortTime, this.setting.limit)
+        this.sub = this.redditService
+            .getSubmissions(this.setting.name, this.setting.sortTime, this.setting.limit)
             .subscribe({
                 next: (submissions) => {
                     this.submissionDatas = submissions

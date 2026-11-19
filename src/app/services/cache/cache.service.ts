@@ -28,7 +28,7 @@ function readCacheEntry(value: unknown): [string, ICachedSubmission] | undefined
 }
 
 @Injectable({
-    providedIn: 'root'
+    providedIn: 'root',
 })
 export class CacheService {
     private readonly cacheKey: string = 'cache';
@@ -58,7 +58,7 @@ export class CacheService {
         } catch (e) {
             console.error('caught error while saving cache, possibly out of space:', e);
         }
-    };
+    }
 
     getCache(): Map<string, ICachedSubmission> | null {
         const cacheJson = localStorage.getItem(this.cacheKey);
@@ -92,11 +92,11 @@ export class CacheService {
             return;
         }
         this.cache.set(submission.id, cachedSubmission);
-    };
+    }
 
     getSubmission(submissionId: string): ICachedSubmission | undefined {
         return this.cache.get(submissionId);
-    };
+    }
 
     removeCachedSubmissions(): void {
         const now = Date.now();

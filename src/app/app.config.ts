@@ -2,9 +2,9 @@ import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr }
 import { ApplicationConfig } from '@angular/core';
 import { RateLimiterService } from './services/rate-limiter/rate-limiter.service';
 
-
 export const appConfig: ApplicationConfig = {
-    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()),
-    { provide: HTTP_INTERCEPTORS, useClass: RateLimiterService, multi: true },
+    providers: [
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        { provide: HTTP_INTERCEPTORS, useClass: RateLimiterService, multi: true },
     ],
 };
