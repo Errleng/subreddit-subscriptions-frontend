@@ -223,10 +223,12 @@ describe('SubredditComponent', () => {
     });
 
     it('uses a modified link click for the open shortcut in Firefox', () => {
+        const reportError = vi.spyOn(console, 'error').mockImplementation(() => {});
         settings.getSettings().openSubmissionKey = 'o';
         expectFeed().flush([makeSubmission()]);
         fixture.detectChanges();
         const card = getElement(host, 'div', '.card');
+        Object.defineProperty(card, 'scrollIntoView', { value: vi.fn() });
         card.focus();
         vi.spyOn(window.navigator, 'userAgent', 'get').mockReturnValue('Firefox');
         const openLink = vi.spyOn(HTMLAnchorElement.prototype, 'dispatchEvent').mockImplementation(function (
@@ -242,5 +244,6 @@ describe('SubredditComponent', () => {
         pressKey(card, 'o');
 
         expect(openLink).toHaveBeenCalledOnce();
+        expect(reportError).not.toHaveBeenCalled();
     });
 });
