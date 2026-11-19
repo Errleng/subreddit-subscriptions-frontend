@@ -4,7 +4,7 @@ This project was generated using [Angular CLI](https://github.com/angular/angula
 
 ## Setup
 
-The frontend uses Angular 22. From the repository root, install the Node version pinned in `.nvmrc` and use npm with the checked-in lockfile.
+The frontend uses Angular 22. From the repository root, install the Node 26 LTS version pinned in `.nvmrc` and use npm with the checked-in lockfile.
 
 ```sh
 nvm install
@@ -31,7 +31,7 @@ At `6a90b61`, a clean lockfile install, the production build, and both TypeScrip
 
 Karma discovered 18 tests. Eight passed, nine failed because standalone components were declared in TestBed, and one failed because the test lacked an HTTP provider. The run reported 34.23% statements, 44.16% branches, 30.12% functions, and 34.16% lines.
 
-The production build, both TypeScript checks, and a browser smoke test passed after upgrading to Angular 22.3.0 on Node 22.23.4 and npm 10.9.9. The production bundle fits the existing 1 MB limit. Karma ran 18 tests, with nine passing and the nine standalone component failures still present.
+The clean install, production build, both TypeScript checks, and a browser smoke test passed after upgrading to Angular 22.3.0 on Node 26.13.1 and npm 11.20.0. The production bundle fits the existing 1 MB limit. Karma ran 18 tests, with nine passing and the nine standalone component failures still present.
 
 The new lint rules expose existing unsafe values and a floating promise. The formatter check reports existing style differences. The aggregate check, coverage thresholds, pre-commit hook, and build-and-test workflow are pending the Vitest migration and a passing suite. Oxfmt's Tinypool version is pinned to a patched release.
 
