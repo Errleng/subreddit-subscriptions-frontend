@@ -18,6 +18,74 @@ export interface ISubredditSetting {
     limit: number;
 }
 
+const DEFAULT_FILTER_THRESHOLD = 1.25;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function isSubredditSetting(value: unknown): value is ISubredditSetting {
+    if (!isRecord(value)) return false;
+    const { name, sortTime, limit } = value;
+    return (
+        typeof name === 'string' && typeof sortTime === 'string' && typeof limit === 'number' && Number.isFinite(limit)
+    );
+}
+
+function readFilterThreshold(value: unknown): number | undefined {
+    if (value === undefined) return DEFAULT_FILTER_THRESHOLD;
+    // The settings form has saved edited thresholds as text.
+    if (typeof value === 'string') {
+        value = value.trim() === '' ? DEFAULT_FILTER_THRESHOLD : Number(value);
+    }
+    return typeof value === 'number' && Number.isFinite(value) ? value : undefined;
+}
+
+function parseSettingsFile(content: string): ISettings {
+    const data: unknown = JSON.parse(content);
+    if (!isRecord(data)) throw new Error('Expected a settings object');
+
+    const {
+        shouldFilterSeenSubmissions = false,
+        openSubmissionKey = '',
+        scrollSubmissionDownKey = '',
+        scrollSubmissionUpKey = '',
+        scrollSubredditDownKey = '',
+        scrollSubredditUpKey = '',
+        subredditSettings,
+    } = data;
+    const scoreIncreaseFilterThreshold = readFilterThreshold(data['scoreIncreaseFilterThreshold']);
+    const commentIncreaseFilterThreshold = readFilterThreshold(data['commentIncreaseFilterThreshold']);
+
+    if (!Array.isArray(subredditSettings) || !subredditSettings.every(isSubredditSetting)) {
+        throw new Error('Invalid subreddit list');
+    }
+    if (
+        typeof shouldFilterSeenSubmissions !== 'boolean' ||
+        scoreIncreaseFilterThreshold === undefined ||
+        commentIncreaseFilterThreshold === undefined ||
+        typeof openSubmissionKey !== 'string' ||
+        typeof scrollSubmissionDownKey !== 'string' ||
+        typeof scrollSubmissionUpKey !== 'string' ||
+        typeof scrollSubredditDownKey !== 'string' ||
+        typeof scrollSubredditUpKey !== 'string'
+    ) {
+        throw new Error('Invalid settings options');
+    }
+
+    return {
+        shouldFilterSeenSubmissions,
+        scoreIncreaseFilterThreshold,
+        commentIncreaseFilterThreshold,
+        openSubmissionKey,
+        scrollSubmissionDownKey,
+        scrollSubmissionUpKey,
+        scrollSubredditDownKey,
+        scrollSubredditUpKey,
+        subredditSettings,
+    };
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -40,8 +108,10 @@ export class SettingsService {
         }
         return {
             shouldFilterSeenSubmissions: existingSettings?.shouldFilterSeenSubmissions || false,
-            scoreIncreaseFilterThreshold: existingSettings?.scoreIncreaseFilterThreshold || 1.25,
-            commentIncreaseFilterThreshold: existingSettings?.commentIncreaseFilterThreshold || 1.25,
+            scoreIncreaseFilterThreshold:
+                readFilterThreshold(existingSettings?.scoreIncreaseFilterThreshold) ?? DEFAULT_FILTER_THRESHOLD,
+            commentIncreaseFilterThreshold:
+                readFilterThreshold(existingSettings?.commentIncreaseFilterThreshold) ?? DEFAULT_FILTER_THRESHOLD,
             openSubmissionKey: existingSettings?.openSubmissionKey || '',
             scrollSubmissionDownKey: existingSettings?.scrollSubmissionDownKey || '',
             scrollSubmissionUpKey: existingSettings?.scrollSubmissionUpKey || '',
@@ -68,23 +138,18 @@ export class SettingsService {
     }
 
     saveSettings(): void {
-        localStorage.setItem(
-            this.settingsListKey,
-            JSON.stringify(this.getSettings()),
-        );
+        this.writeSettings(this.getSettings());
+    }
+
+    private writeSettings(settings: ISettings): void {
+        localStorage.setItem(this.settingsListKey, JSON.stringify(settings));
     }
 
     async importSettings(file: File): Promise<ISettings> {
-        return new Promise<ISettings>((resolve) => {
-            const fileReader: FileReader = new FileReader();
-            fileReader.onload = () => {
-                if (fileReader.result) {
-                    this.settings = JSON.parse(fileReader.result as string);
-                    resolve(this.settings);
-                }
-            };
-            fileReader.readAsText(file);
-        });
+        const imported = parseSettingsFile(await file.text());
+        this.writeSettings(imported);
+        this.settings = imported;
+        return imported;
     }
 
     exportSettings(): void {

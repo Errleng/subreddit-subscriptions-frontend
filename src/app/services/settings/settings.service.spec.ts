@@ -51,7 +51,7 @@ describe('SettingsService', () => {
         expect(new SettingsService().getSettings()).toEqual(importedSettings);
     });
 
-    it('loads settings from a JSON file and persists them when saved', async () => {
+    it('loads and persists a complete settings export', async () => {
         const service = new SettingsService();
         const file = new File([JSON.stringify(importedSettings)], 'fixture-settings.json', {
             type: 'application/json',
@@ -59,10 +59,79 @@ describe('SettingsService', () => {
 
         await expect(service.importSettings(file)).resolves.toEqual(importedSettings);
         expect(service.getSettings()).toEqual(importedSettings);
-        expect(localStorage.getItem('settings')).toBeNull();
-
-        service.saveSettings();
         expect(new SettingsService().getSettings()).toEqual(importedSettings);
+    });
+
+    it('fills missing options in older exports and normalizes text thresholds, including zero', async () => {
+        const service = new SettingsService();
+        const defaults = structuredClone(service.getSettings());
+        const file = new File(
+            [
+                JSON.stringify({
+                    subredditSettings: [],
+                    scoreIncreaseFilterThreshold: '0',
+                    commentIncreaseFilterThreshold: '',
+                }),
+            ],
+            'fixture-older-settings.json',
+        );
+        const expected = { ...defaults, subredditSettings: [], scoreIncreaseFilterThreshold: 0 };
+
+        await expect(service.importSettings(file)).resolves.toEqual(expected);
+        expect(new SettingsService().getSettings()).toEqual(expected);
+    });
+
+    it.each([
+        { label: 'empty', contents: '' },
+        { label: 'malformed JSON', contents: '{"subredditSettings":' },
+        { label: 'a JSON array', contents: '[]' },
+        { label: 'JSON without a subreddit list', contents: '{}' },
+        { label: 'a list with a non-object entry', contents: '{"subredditSettings":[null]}' },
+        { label: 'a list with an invalid entry', contents: '{"subredditSettings":[{"name":"fixture-feed"}]}' },
+        {
+            label: 'an invalid threshold',
+            contents: '{"subredditSettings":[],"scoreIncreaseFilterThreshold":"invalid"}',
+        },
+        { label: 'an invalid shortcut', contents: '{"subredditSettings":[],"openSubmissionKey":1}' },
+    ])('rejects $label and preserves the current and saved settings', async ({ contents }) => {
+        const service = new SettingsService();
+        service.saveSettings();
+        const original = structuredClone(service.getSettings());
+        const file = new File([contents], 'fixture-invalid.json', { type: 'application/json' });
+
+        await expect(service.importSettings(file)).rejects.toThrow();
+
+        expect(service.getSettings()).toEqual(original);
+        expect(new SettingsService().getSettings()).toEqual(original);
+    });
+
+    it('rejects a file read failure and retains the current settings', async () => {
+        const service = new SettingsService();
+        const original = structuredClone(service.getSettings());
+        const file = new File(['{}'], 'fixture-unreadable.json');
+        const error = new DOMException('Could not read file', 'NotReadableError');
+        vi.spyOn(file, 'text').mockRejectedValue(error);
+
+        await expect(service.importSettings(file)).rejects.toBe(error);
+
+        expect(service.getSettings()).toEqual(original);
+        expect(localStorage.getItem('settings')).toBeNull();
+    });
+
+    it('keeps the previous settings when saving an otherwise valid import fails', async () => {
+        const service = new SettingsService();
+        service.saveSettings();
+        const original = structuredClone(service.getSettings());
+        const file = new File([JSON.stringify(importedSettings)], 'fixture-settings.json');
+        const error = new DOMException('Storage limit reached', 'QuotaExceededError');
+        vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+            throw error;
+        });
+
+        await expect(service.importSettings(file)).rejects.toBe(error);
+
+        expect(service.getSettings()).toEqual(original);
+        expect(new SettingsService().getSettings()).toEqual(original);
     });
 
     it('downloads the current settings as a JSON file', async () => {

@@ -146,26 +146,52 @@ describe('SubredditListComponent', () => {
         expect(renderedFeeds()).toEqual([]);
     });
 
-    it('imports and saves a replacement list and exports the updated settings', async () => {
+    it('shows an import error, keeps the current list, and recovers when retried with a valid file', async () => {
         render('fixture-original');
         expectFeed('fixture-original').flush([]);
         settings.saveSettings();
+        const input = getElement(host, 'input', 'input[type="file"]');
+        const importSettings = vi.spyOn(settings, 'importSettings');
+        const resetInput = vi.spyOn(input, 'value', 'set');
+
+        function selectFile(...files: File[]): void {
+            Object.defineProperty(input, 'files', { value: files, configurable: true });
+            input.dispatchEvent(new Event('change'));
+            fixture.detectChanges();
+        }
+
+        selectFile();
+        expect(importSettings).not.toHaveBeenCalled();
+
+        const invalid = new File([''], 'fixture-invalid.json', { type: 'application/json' });
+        selectFile(invalid);
+        expect(input.disabled).toBe(true);
+        await expect(importSettings.mock.results[0]?.value).rejects.toThrow();
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(host.querySelector('[role="alert"]')?.textContent).toContain('Could not import settings');
+        expect(input.disabled).toBe(false);
+        expect(resetInput).toHaveBeenCalledWith('');
+        expect(savedFeeds()).toEqual(['fixture-original']);
+        expect(renderedFeeds()).toEqual(['r/fixture-original']);
+
         const imported = {
             ...settings.getSettings(),
             subredditSettings: [{ name: 'fixture-imported', sortTime: 'day', limit: 10 }],
         };
         const file = new File([JSON.stringify(imported)], 'fixture-settings.json', { type: 'application/json' });
-        const input = getElement(host, 'input', 'input[type="file"]');
-        Object.defineProperty(input, 'files', { value: [file] });
-        const importSettings = vi.spyOn(settings, 'importSettings');
         const exportSettings = vi.spyOn(settings, 'exportSettings').mockImplementation(() => {});
 
-        input.dispatchEvent(new Event('change'));
-        expect(importSettings).toHaveBeenCalledExactlyOnceWith(file);
-        await expect(importSettings.mock.results[0]?.value).resolves.toEqual(imported);
+        selectFile(file);
+        expect(importSettings).toHaveBeenLastCalledWith(file);
+        await expect(importSettings.mock.results[1]?.value).resolves.toEqual(imported);
+        await fixture.whenStable();
         fixture.detectChanges();
         expectFeed('fixture-imported').flush([]);
 
+        expect(host.querySelector('[role="alert"]')).toBeNull();
+        expect(input.disabled).toBe(false);
         expect(savedFeeds()).toEqual(['fixture-imported']);
         expect(renderedFeeds()).toEqual(['r/fixture-imported']);
 

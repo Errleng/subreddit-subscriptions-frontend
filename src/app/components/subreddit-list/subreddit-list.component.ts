@@ -35,6 +35,9 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
 
     noResultsFound = false;
 
+    isImportingSettings = false;
+    settingsImportFailed = false;
+
     constructor(private redditService: RedditService, public settingsService: SettingsService) { }
 
     ngOnInit(): void {
@@ -106,17 +109,23 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
         this.settingsService.saveSettings();
     }
 
-    importSettings(event: Event): void {
-        const inputElement: HTMLInputElement = event.target as HTMLInputElement;
-        if (inputElement.files === null) {
-            console.error('Imported file is null', event);
+    importSettings(input: HTMLInputElement): void {
+        const file = input.files?.[0];
+        if (!file || this.isImportingSettings) {
             return;
         }
 
-        const file: File = inputElement.files[0];
-        this.settingsService.importSettings(file).then(() => {
-            this.settingsService.saveSettings();
-        });
+        input.value = '';
+        this.isImportingSettings = true;
+        this.settingsImportFailed = false;
+        this.settingsService
+            .importSettings(file)
+            .finally(() => {
+                this.isImportingSettings = false;
+            })
+            .catch(() => {
+                this.settingsImportFailed = true;
+            });
     }
 
     exportSettings(): void {
