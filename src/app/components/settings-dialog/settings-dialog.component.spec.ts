@@ -8,7 +8,7 @@ describe('SettingsDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SettingsDialogComponent ]
+      imports: [SettingsDialogComponent],
     })
     .compileComponents();
   });
