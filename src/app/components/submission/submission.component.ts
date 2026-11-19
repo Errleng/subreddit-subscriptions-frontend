@@ -26,9 +26,7 @@ export class SubmissionComponent implements OnInit, FocusableOption {
 
     @ViewChild('cardDiv') card?: ElementRef<HTMLDivElement>;
 
-    @ViewChild('videoElem') videoElem!: ElementRef;
-
-    @ViewChild('audioElem') audioElem!: ElementRef;
+    @ViewChild('audioElem') audioElem?: ElementRef<HTMLAudioElement>;
 
     shortlink: string = '';
     isVisible: boolean = true;
@@ -101,23 +99,28 @@ export class SubmissionComponent implements OnInit, FocusableOption {
         }
     }
 
-    onMediaPlaying() {
-        if (this.audioElem) {
-            this.audioElem.nativeElement.play();
-            this.audioElem.nativeElement.currentTime = this.videoElem.nativeElement.currentTime;
+    onMediaPlaying(currentTime: number): void {
+        const audio = this.audioElem?.nativeElement;
+        if (audio) {
+            audio.currentTime = currentTime;
+            audio.play().catch((error: unknown) => {
+                console.debug('Could not play submission audio:', error);
+            });
         }
     }
 
-    onMediaPause() {
-        if (this.audioElem) {
-            this.audioElem.nativeElement.currentTime = this.videoElem.nativeElement.currentTime;
-            this.audioElem.nativeElement.pause();
+    onMediaPause(currentTime: number): void {
+        const audio = this.audioElem?.nativeElement;
+        if (audio) {
+            audio.currentTime = currentTime;
+            audio.pause();
         }
     }
 
-    onMediaSeekCompletion(event: any) {
-        if (this.audioElem) {
-            this.audioElem.nativeElement.currentTime = event.target.currentTime;
+    onMediaSeekCompletion(currentTime: number): void {
+        const audio = this.audioElem?.nativeElement;
+        if (audio) {
+            audio.currentTime = currentTime;
         }
     }
 }

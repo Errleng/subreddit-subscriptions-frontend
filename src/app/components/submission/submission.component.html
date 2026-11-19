@@ -57,9 +57,9 @@
                         <video
                             class="submission-media"
                             #videoElem
-                            (playing)="onMediaPlaying()"
-                            (pause)="onMediaPause()"
-                            (seeked)="onMediaSeekCompletion($event)"
+                            (playing)="onMediaPlaying(videoElem.currentTime)"
+                            (pause)="onMediaPause(videoElem.currentTime)"
+                            (seeked)="onMediaSeekCompletion(videoElem.currentTime)"
                             controls
                         >
                             <source [src]="data.submission.mediaVideo" />

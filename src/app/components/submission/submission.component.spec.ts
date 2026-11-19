@@ -177,4 +177,21 @@ describe('SubmissionComponent', () => {
 
         expect(host.querySelector('audio')).toBeNull();
     });
+
+    it('keeps the audio clock aligned when the browser rejects playback', async () => {
+        render({
+            submission: makeSubmission({ mediaVideo: 'https://v.redd.it/fixture-video/DASH_720.mp4' }),
+            cachedSubmission: null,
+        });
+        const video = getElement(host, 'video');
+        const audio = getElement(host, 'audio');
+        const error = new DOMException('Playback was blocked', 'NotAllowedError');
+        vi.spyOn(audio, 'play').mockRejectedValue(error);
+
+        video.currentTime = 12;
+        video.dispatchEvent(new Event('playing'));
+
+        await vi.waitFor(() => expect(console.debug).toHaveBeenCalledWith('Could not play submission audio:', error));
+        expect(audio.currentTime).toBe(12);
+    });
 });
