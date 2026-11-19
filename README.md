@@ -41,7 +41,9 @@ At `91ef46e`, the expanded Vitest suite had 45 tests and reported 97.35% stateme
 
 At `7325ebc`, type-aware lint reported 34 findings. The lint check now passes for application code, specs, and the Vitest config.
 
-The formatter check reports existing style differences. The aggregate check, pre-commit hook, and build-and-test workflow are pending. Oxfmt's Tinypool version is pinned to a patched release.
+At `e1843d0`, Oxfmt reported formatting differences in 35 files. The formatter check now passes. Oxfmt's Tinypool version is pinned to a patched release.
+
+The aggregate check, pre-commit hook, and build-and-test workflow are pending.
 
 The secret-scan workflow uses pinned Gitleaks with redacted findings and includes merge diffs. GitHub reports that the default branch is protected. The hosted workflow and required status checks still need verification. Before pushing, follow the outgoing-history audit in [the setup guide](setup/SETUP.md).
 
