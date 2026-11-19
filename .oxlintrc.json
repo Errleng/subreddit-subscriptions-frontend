@@ -11,7 +11,7 @@
     "overrides": [
         {
             "files": ["**/*.spec.ts"],
-            "env": { "jasmine": true }
+            "env": { "vitest": true }
         }
     ],
     "rules": {

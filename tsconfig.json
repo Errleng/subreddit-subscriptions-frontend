@@ -5,7 +5,7 @@
     "compilerOptions": {
         "rootDir": ".",
         "paths": { "src/*": ["./src/*"] },
-        "types": ["jasmine"],
+        "types": ["vitest/globals"],
         "outDir": "./dist/out-tsc",
         "noEmitOnError": true,
         "strict": true,
