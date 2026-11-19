@@ -83,6 +83,50 @@ describe('SubredditComponent', () => {
         expect(cache.getCache()?.get(other.id)).toEqual({ submission: other, createdAt: now, isSeen: false });
     });
 
+    it('accepts text-only posts without media fields and preserves serialized timestamps', () => {
+        const post = {
+            id: 'fixture-text',
+            title: 'Text-only example',
+            score: 100,
+            num_comments: 20,
+            upvote_ratio: 0.9,
+            created_utc: 1_700_000_000,
+            lastUpdateTime: '2023-11-14T22:13:20.000Z',
+        };
+        expectFeed().flush([post]);
+        fixture.detectChanges();
+
+        expect(getElement(host, 'a', 'h4 a').textContent?.trim()).toBe(post.title);
+        expect(host.querySelector('img, video')).toBeNull();
+        expect(cache.getSubmission(post.id)?.submission).toMatchObject({
+            lastUpdateTime: post.lastUpdateTime,
+            imageUrls: [],
+            num_images: 0,
+            removed_by_category: null,
+        });
+    });
+
+    it.each([
+        { label: 'a non-object response', body: 'invalid feed' },
+        {
+            label: 'a malformed post',
+            body: [makeSubmission({ id: 'fixture-partial' }), { id: 'fixture-invalid' }],
+        },
+    ])('preserves the last valid feed and cache on $label', ({ body }) => {
+        const reportError = vi.spyOn(console, 'error').mockImplementation(() => {});
+        expectFeed().flush([makeSubmission({ id: 'fixture-original' })]);
+        fixture.detectChanges();
+
+        getElement(host, 'button').click();
+        expectFeed().flush(body);
+        fixture.detectChanges();
+
+        expect(reportError).toHaveBeenCalledWith('Failed to load data for r/fixture-feed:', expect.any(Error));
+        expect(renderedPosts()).toEqual(['https://redd.it/fixture-original']);
+        expect([...(cache.getCache()?.keys() ?? [])]).toEqual(['fixture-original']);
+        expect(cache.getSubmission('fixture-partial')).toBeUndefined();
+    });
+
     it('retains the last rendered posts on a failed reload and recovers on the next reload', () => {
         const reportError = vi.spyOn(console, 'error').mockImplementation(() => {});
         expectFeed().flush([makeSubmission({ id: 'fixture-original' })]);

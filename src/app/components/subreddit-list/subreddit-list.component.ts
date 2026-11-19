@@ -70,7 +70,7 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
 
     addSub(subName: string) {
         this.redditService.checkSubredditValid(subName).subscribe({
-            next: (resp: Response) => {
+            next: (resp) => {
                 if (resp.ok) {
                     this.noResultsFound = false;
                     const settings = this.settingsService.getSettings();
@@ -84,8 +84,8 @@ export class SubredditListComponent implements OnInit, AfterViewInit {
                     console.error('Subreddit search response was not OK:', resp);
                 }
             },
-            error: (err: HttpErrorResponse) => {
-                if (err.status === 404) {
+            error: (err: unknown) => {
+                if (err instanceof HttpErrorResponse && err.status === 404) {
                     this.noResultsFound = true;
                 } else {
                     console.error('Subreddit search error:', err);
