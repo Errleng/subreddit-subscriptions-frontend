@@ -1,4 +1,4 @@
-import { FocusableOption, FocusOrigin } from '@angular/cdk/a11y';
+import { FocusableOption } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import {
     ChangeDetectionStrategy,
@@ -24,7 +24,7 @@ export class SubmissionComponent implements OnInit, FocusableOption {
     @Input() data!: ISubmissionData;
     @Output() focusEvent = new EventEmitter();
 
-    @ViewChild('cardDiv') card!: ElementRef;
+    @ViewChild('cardDiv') card?: ElementRef<HTMLDivElement>;
 
     @ViewChild('videoElem') videoElem!: ElementRef;
 
@@ -82,9 +82,12 @@ export class SubmissionComponent implements OnInit, FocusableOption {
         }
     }
 
-    focus(origin?: FocusOrigin): void {
-        this.card.nativeElement.focus({ preventScroll: true });
-        this.card.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+    focus(): void {
+        const card = this.card?.nativeElement;
+        if (card) {
+            card.focus({ preventScroll: true });
+            card.scrollIntoView();
+        }
     }
 
     onFocus(): void {

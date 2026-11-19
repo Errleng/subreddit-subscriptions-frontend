@@ -1,4 +1,4 @@
-import { FocusableOption, FocusKeyManager, FocusOrigin } from '@angular/cdk/a11y';
+import { FocusableOption, FocusKeyManager } from '@angular/cdk/a11y';
 import {
     ChangeDetectionStrategy,
     AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, ViewChild, ViewChildren
@@ -26,7 +26,7 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
     @Input() setting: ISubredditSetting = { name: '', sortTime: 'day', limit: 10 };
     @Output() focusEvent = new EventEmitter();
 
-    @ViewChild('subredditTitle') subredditTitle!: ElementRef;
+    @ViewChild('subredditTitle') subredditTitle!: ElementRef<HTMLHeadingElement>;
 
     @ViewChildren(SubmissionComponent) submissions!: QueryList<SubmissionComponent>;
 
@@ -58,12 +58,13 @@ export class SubredditComponent implements OnInit, AfterViewInit, OnDestroy, Foc
         this.sub?.unsubscribe();
     }
 
-    focus(origin?: FocusOrigin): void {
+    focus(): void {
         if (this.keyEventManager.activeItem === null) {
             this.keyEventManager.setFirstItemActive();
             if (this.keyEventManager.activeItem === null) {
-                this.subredditTitle.nativeElement.focus({ preventScroll: true });
-                this.subredditTitle.nativeElement.scrollIntoView(true, { behavior: 'smooth' });
+                const title = this.subredditTitle.nativeElement;
+                title.focus({ preventScroll: true });
+                title.scrollIntoView();
                 return;
             }
         }

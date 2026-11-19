@@ -100,6 +100,7 @@ describe('SubmissionComponent', () => {
 
         if (highlights === null) {
             expect(host.querySelector('.card')).toBeNull();
+            expect(() => fixture.componentInstance.focus()).not.toThrow();
             return;
         }
         const title = getElement(host, 'a', 'h4 a');
