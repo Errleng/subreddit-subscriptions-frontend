@@ -42,6 +42,44 @@ describe('CacheService', () => {
         expect(service.getCache()).toEqual(new Map([[fresh.submission.id, fresh]]));
     });
 
+    it.each(['{"cache":', '{"cache":[]}'])('starts with a usable cache when the stored data is %s', (contents) => {
+        localStorage.setItem('cache', contents);
+        const post = entry('fixture-new');
+
+        const service = new CacheService();
+        service.addSubmission(post);
+        service.saveCache(false);
+
+        expect(service.getCache()).toEqual(new Map([[post.submission.id, post]]));
+    });
+
+    it('retains valid cached posts and skips malformed entries', () => {
+        const fresh = {
+            ...entry('fixture-fresh'),
+            submission: makeSubmission({
+                id: 'fixture-fresh',
+                imageUrls: ['https://example.test/fixture-preview.png'],
+            }),
+            isSeen: true,
+        };
+        localStorage.setItem(
+            'cache',
+            JSON.stringify([
+                [fresh.submission.id, fresh],
+                null,
+                ['fixture-missing', null],
+                ['fixture-wrong-id', fresh],
+                ['fixture-invalid-date', { ...entry('fixture-invalid-date'), createdAt: 'not a timestamp' }],
+                ['fixture-invalid-post', { createdAt: now, isSeen: true, submission: null }],
+            ]),
+        );
+
+        const service = new CacheService();
+
+        expect(service.getSubmission(fresh.submission.id)).toEqual(fresh);
+        expect(service.getCache()).toEqual(new Map([[fresh.submission.id, fresh]]));
+    });
+
     it('persists new entries and retains the original entry for a repeated post', () => {
         const service = new CacheService();
         const original = entry('fixture-post');

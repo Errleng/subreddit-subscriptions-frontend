@@ -1,6 +1,31 @@
 import { Injectable } from '@angular/core';
-import { ICachedSubmission, ISubmission } from 'src/app/types/submission';
+import { ICachedSubmission, readSubmission } from 'src/app/types/submission';
 import { environment } from 'src/environments/environment';
+
+function readCacheEntry(value: unknown): [string, ICachedSubmission] | undefined {
+    if (!Array.isArray(value)) return undefined;
+    const pair: unknown[] = value;
+    const [id, data] = pair;
+    if (
+        typeof id !== 'string' ||
+        typeof data !== 'object' ||
+        data === null ||
+        !('createdAt' in data) ||
+        !('isSeen' in data) ||
+        !('submission' in data)
+    ) {
+        return undefined;
+    }
+
+    const { createdAt, isSeen } = data;
+    if (typeof createdAt !== 'number' || !Number.isFinite(createdAt) || typeof isSeen !== 'boolean') {
+        return undefined;
+    }
+    const submission = readSubmission(data.submission);
+    if (submission?.id !== id) return undefined;
+
+    return [id, { submission, createdAt, isSeen }];
+}
 
 @Injectable({
     providedIn: 'root'
@@ -41,7 +66,24 @@ export class CacheService {
             console.warn('could not find cache');
             return null;
         }
-        return new Map(JSON.parse(cacheJson));
+        let data: unknown;
+        try {
+            data = JSON.parse(cacheJson);
+        } catch {
+            console.warn('Could not parse saved cache');
+            return null;
+        }
+        if (!Array.isArray(data)) return null;
+
+        const records: unknown[] = data;
+        const cache = new Map<string, ICachedSubmission>();
+        for (const record of records) {
+            const entry = readCacheEntry(record);
+            if (entry !== undefined) {
+                cache.set(...entry);
+            }
+        }
+        return cache;
     }
 
     addSubmission(cachedSubmission: ICachedSubmission): void {
