@@ -25,7 +25,9 @@ Angular's unit-test builder runs Vitest with jsdom. Colocate `*.spec.ts` files w
 | `npm run lint:fix`      | Apply Oxlint's automatic fixes to the same files.                                                         |
 | `npm run format:check`  | Check formatting without writing files. Use `npm run format` to apply it.                                 |
 
-The TypeScript projects use `skipLibCheck` to skip checking dependency declaration files. Application and test files are still type-checked.
+Both TypeScript projects inherit strict mode, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`, `noUnusedLocals`, and `noUnusedParameters` from `tsconfig.json`. The typecheck command uses `--noEmit` with both projects. The production build also checks Angular templates.
+
+The TypeScript projects use `skipLibCheck` for dependency declaration files.
 
 ### Setup baseline
 
